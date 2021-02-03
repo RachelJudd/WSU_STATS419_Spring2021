@@ -1,0 +1,1 @@
+This data was pulled from https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000 in September 2020.
