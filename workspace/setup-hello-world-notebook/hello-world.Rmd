@@ -1,7 +1,7 @@
 ---
 title: 'R Notebook example: Hello World'
-name: "PUT --YOUR NAME-- HERE"
-email: "PUT --your_wsu_email@wsu.edu-- HERE"
+name: "Rachel Judd"
+email: "rachel.judd@wsu.edu"
 output:
   html_document
 ---
@@ -16,8 +16,12 @@ parallel::detectCores();
 # Cntrl-Shift-C is also your friend
 
 ```
-Can you find another library that counts cores?  Is it a core or a thread?
+Can you find another library that counts cores?  Is it a core or a thread? 
 
+```{r}
+# mc.cores(); 
+
+```
 
 # Including our own functions
 ```{r}
@@ -57,8 +61,45 @@ str(years);
 ```
 
 
-Can you execute the other examples:  weeks, days, ywd, Ymd below?  Where is the documentation about what each of the letters means?  Paste a URL here as a reference.  What does ISO mean?
+Can you execute the other examples:  weeks, days, ywd, Ymd below?
+```{r}
+weeks= convertDateStringToFormat(date.strings,
+                                  "%W", "weeks",
+                                  "%m/%d/%Y %H:%M");
 
+weeks;
+str(weeks);
+```
+
+```{r}
+days= convertDateStringToFormat(date.strings,
+                                  "%d", "days",
+                                  "%m/%d/%Y %H:%M");
+
+days;
+str(days);
+```
+```{r}
+ywd= convertDateStringToFormat(date.strings,
+                                  "%Y%W%d", "ywd",
+                                  "%m/%d/%Y %H:%M");
+
+ywd;
+str(ywd);
+```
+```{r}
+Ymd= convertDateStringToFormat(date.strings,
+                                  "%Y%m%d", "Ymd",
+                                  "%m/%d/%Y %H:%M");
+
+Ymd;
+str(Ymd);
+```
+
+Where is the documentation about what each of the letters means?  Paste a URL here as a reference.  What does ISO mean?
+
+https://www.rdocumentation.org/packages/lubridate/versions/1.7.9.2/topics/ymd
+ISO = International Organization for Standardization. 
 # Coupling elements together
 
 ```{r}
@@ -68,16 +109,25 @@ n = 9999;
 set.seed(my.seed);
 x.rnorm = rnorm(n);
 x.runif = runif(n);
+# x.rt(n)=rt(n);
 ```
-What is `set.seed` doing?  How can you know.  What happens if you set the value to `NULL`?  How long does it have a memory?
+What is `set.seed` doing?  How can you know. 
+set.seed sets the first number in a random number generator. You can know this by looking at the r documentation: https://www.rdocumentation.org/packages/simEd/versions/2.0.0/topics/set.seed
+What happens if you set the value to `NULL`?  How long does it have a memory?
+it uses a random seed. It has a memory until you set the seed to something else. 
 
 What is `rnorm` doing?  What about `runif`?  Why doesn't `rt(n)` work?
+rnorm samples from a normal distribution while runif samples from a uniform distribution. It looks like rt needs two conditions [rt(n, m)] for it to run correctly. 
+https://www.rdocumentation.org/packages/compositions/versions/2.0-1/topics/rnorm
+https://www.rdocumentation.org/packages/compositions/versions/2.0-1/topics/runif
+https://www.rdocumentation.org/packages/hisemi/versions/1.1-0/topics/rt
 
 ```{r}
 hist(x.rnorm);
 boxplot(x.rnorm);
 ```
 What do each of these show?  Why does Tukey like the boxplot over the histogram?  (e.g., he created the "box-and-whisker" plot, why?)
+These show a normal distribution and boxplot of the data. Tukey probably liked the boxplot better because it has a vertical alignment which makes it easier to read. Everything in the boxplot is pretty readily apparent, while the normal distribution takes more effort to decipher. 
 
 ```{r}
 x.rnorm.sample = sample(x.rnorm);
@@ -88,14 +138,20 @@ plot(x.rnorm, x.rnorm.sample, xlab="x.rnorm", ylab="x.rnorm.sample", asp=1);
 ```
 
 How is plotting the same data, but changing `asp` influencing our interpretation?  What is the correct approach?  Why?
+By changing the width of the intervals on the x-axis, it changes the graph from looking like the variables could be somewhat correlated to making the graph look like no real relationship exists. The second way appears more correct because it looks like it is showing the x and y axes on the same scale instead of stretching out the x-axis. 
 
 TODO:  your turn.  hist, boxplot, plot for `x.runif` with the sampling element.  Notice the "parallel" code structure.  Notepad++ and Cntrl-H is your friend.  (minutes becomes seconds).
+```{r}
+hist(x.runif);
+boxplot(x.runif);
+```
 
 # Local Data provenance
 ```{r}
-local.data.path = "R:/R-data/";  # to store HTML files  # You change this to your "data" path, not your "code/github" path...
+local.data.path = "D:/R-Data/";  # to store HTML files  # You change this to your "data" path, not your "code/github" path...
 
 path.wiki = paste0(local.data.path,"Wikipedia/");
+
 
 include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-file.R"); 
 source_url(include.me);
@@ -104,11 +160,12 @@ createDirRecursive(path.wiki);
 ```
 
 Why would `createDirectoryRecursive` be a better name for this custom function?
+Because then you would instantly know that it's making a recursive directory instead of wondering what word is abbreviated "dir".
 
 ```{r}
 library(rvest);  # UGH!  Todo, get rid of these "tidyverse" dependencies
 library(magrittr); # how do you install these if you don't already have them?
-
+#You write install.packages("rvest") in RGUI
 
 include.me = paste0(github.monte, "humanVerseWSU/master/extra/functions-wikipedia.R"); 
 source_url(include.me);
@@ -121,12 +178,13 @@ wiki.info = wiki.downloadWikiPage(wiki.url, path.wiki);
     str(wiki.info);
 ```
 Look in your "data path"?  What do you see?  Why is this important for a "chain of custody"?
+I see the R-Data folder on the D: drive. The folder wikipedia is in the R-Data folderand en^wikipedia^org-wiki-Columbia_Falls+_Montana folder is in the wikipedia folder. en^wikipedia^org-wiki-Columbia_Falls+_Montana contains a coordinates page, population page, and the webpage. 
 
 ```{r}
 latlong = wiki.findCoordinates(wiki.info$path.wiki.page, wiki.info$wiki.html);     latlong;
 ```
 What does this function do?  What is the function name?  What would be a better function name?
-
+This function finds the longitude and the latitude. It's name is latlong but a better name would be LongitudeLatitude.
 ```{r}
 include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-search.R"); 
 source_url(include.me);
@@ -135,21 +193,62 @@ population = wiki.historicalPopulation(wiki.info$path.wiki.page, wiki.info$wiki.
     population;
 ```
 How could I suppress the `NAs introduced by coercion` warning?  Where in the code?
-
+I just hit Cntrl-Alt-C over the first paragraph of code in the chunk and it ran the code and got rid of the coercion warning. 
 ```{r}
 climate = wiki.parseAverageClimate(wiki.info$path.wiki.page, wiki.info$wiki.html);
   str(climate);  # doesn't exist ...
 ```
 Review the original WIKI page (WEB -> HTML CACHE).  Is this expected?
+Yes.
 
 TODO:  You do `https://en.wikipedia.org/wiki/Whitefish,_Montana` which should have climate.  Also do `YOUR TOWN OF CHOICE HERE` ... for each, the latlong, population, and climate.
+```{r}
+wiki.url = "https://en.wikipedia.org/wiki/Whitefish,_Montana";
+wiki.info = wiki.downloadWikiPage(wiki.url, path.wiki);
+    str(wiki.info);
+```
+```{r}
+latlong = wiki.findCoordinates(wiki.info$path.wiki.page, wiki.info$wiki.html);     latlong;
+```
+```{r}
+include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-search.R"); 
+source_url(include.me);
+
+population = wiki.historicalPopulation(wiki.info$path.wiki.page, wiki.info$wiki.html);
+    population;
+```
+```{r}
+climate = wiki.parseAverageClimate(wiki.info$path.wiki.page, wiki.info$wiki.html);
+  str(climate);
+```
+```{r}
+wiki.url = "https://en.wikipedia.org/wiki/Siletz,_Oregon";
+
+wiki.info = wiki.downloadWikiPage(wiki.url, path.wiki);
+    str(wiki.info);
+```
+```{r}
+
+latlong = wiki.findCoordinates(wiki.info$path.wiki.page, wiki.info$wiki.html);     latlong;
+```
+```{r}
+include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-search.R"); 
+source_url(include.me);
+
+population = wiki.historicalPopulation(wiki.info$path.wiki.page, wiki.info$wiki.html);
+    population;
+```
+```{r}
+climate = wiki.parseAverageClimate(wiki.info$path.wiki.page, wiki.info$wiki.html);
+  str(climate);
+```
 
 # Reading in some data
 
 Copy the file `state-capitals-climatedata.txt` to your local github repo in a folder called `datasets`.  You should now have a few folders at that level:  datasets, functions, latex, and workspace.
 
 ```{r}
-github.local.my = "C:/_git_/github/TEMPLATE-Pseudo/";
+github.local.my = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
 
 # github.local.my = "C:/_git_/github/USERNAME/TEMPLATE-Pseudo/";
 
@@ -157,7 +256,7 @@ climate = utils::read.csv( paste0(github.local.my, "datasets/state-capitals-clim
 ```
 
 Browse and open the file `state-capitals-climatedata.txt` with Notepad++.  What do you observe?  What are the rows?  Columns?  Why is this a panel of data and not a traditional table or dataframe?
-
+There are a lot of words and numbers separated by the | symbol. The states are listed in alphabetical order, with their climate data listed in rows. The column headers do not line up with the information below them. the columns list the state, capital, unit, key, and the months of the year. It might be a panel of data because it was the easiest way to extract the data from the source and still be able to use it for other calculations and such later. 
 ```{r}
 include.me = paste0(github.monte, "humanVerseWSU/master/misc/functions-midterm-F2000.R"); 
 source_url(include.me);
@@ -172,16 +271,19 @@ source_url(include.me);
 plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Helena");
 ```
 What does the function `plotTemperatureFromWikipediaData` do?
+It plots the temperature data and the weather data from the wikipedia file for the whole year. 
 
 Describe the graphic.
-
+The graphic is rather cluttered and hard to read. The numbers do not line up with the graph lines and there is no consideration of the fact that precipitation is not measured in degrees F, so its axis should be labeled differently than the main temperature data axis. 
 ```{r}
 compareTwoCitiesClimates(climate, city.key="capital", city.1="Helena", city.2="Baton Rouge");
 ```
 
 What does this function do?
+The function spits out the graphs of the climate data for two cities side by side. 
 
 Describe the graphic.  What do you notice about the y-axis?  Is this appropriate?  Why or why not?
+It measures everything, including precipitation, in degrees F. No, this is not appropriate. Precipitation is usually measured in inches or centimeters, not measured by degrees F.
 
 This is an example of "one graphic" ... each element means something.  It definitely has multivariate data.  The colors all mean something.  Yet it may be "too busy" ... An optimal visualization is the pinnacle of success in data analytics.  One graphic is a search for a "holy grail" to communicate most effectively.
 
