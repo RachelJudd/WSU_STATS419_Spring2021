@@ -1,0 +1,106 @@
+---
+title: 'R Notebook: intro'
+author: "Rachel Judd [rachel.judd]"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-maths.R");
+library(devtools);  
+source_url(include.me);
+```
+```{r}
+which.github = "remote";  # local ... remote 
+
+github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+
+if(which.github == "remote")
+  {
+  include.me = paste0( github.remote, "functions/functions-intro.R");
+  library(devtools);
+  source_url(include.me);
+  } else {
+          include.me = paste0( github.local, "functions/functions-intro.R");
+          source(include.me);
+          }
+```
+
+
+```{r}
+which.github = "local"
+
+github.local = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/";
+
+library(plotrix);
+library(pracma);
+```
+
+# Handshake
+The handShake(n) function calculated the number of handshakes possible if n persons each shakes hands with every other person precisely 1 time. The function then plots the situation by representing the n persons as circles equally spaced along the circumference of a central circle. Each handshake is represented by a line connecting the two people (circles) who are shaking hands. 
+
+The handShake(n) function requires n to be a whole number because it is not practical to have fractions of people shaking hands. The function also requires n to be greater than or equal to 1, since it is impossible for zero or a negative amount of people to shake hands. 
+
+## Example of handShake with n = 4 people:
+```{r}
+
+handShake(4)
+```
+## Example of handShake with n = 6 people:
+```{r}
+handShake(6)
+```
+## Example of handShake with n = 10 people:
+```{r}
+handShake(10)
+
+```
+
+# Alphabet Matrix
+The alphabetCounter(filepath) function deletes the white spaces in a .txt document, converts all of the letters to lowercase, and counts the amount of each character in the document. The result is displayed in a table. Each letter count is displayed in a column with headings “a-z” and any non-letter characters are counted under the column “OTHER.”
+
+## Using alphabetCounter on the Declaration of Independence:
+This is an example of alphabetCounter(filepath) being used to count the characters in both the Thomas Jefferson draft of the Declaration of Independence and the final version of the Declaration of Independence. 
+Below is a table containing the character counts for each document. 
+
+```{r}
+print(df)
+```
+Below is a bar graph comparing the proportion of each character in the final version to the proportion of each character in the Thomas Jefferson draft. 
+```{r}
+barplot(myMatrix1, names.arg=(rownames(dp)), cex.names=0.78, cex.axis=0.9, beside = TRUE, ylim = c(0,0.14),axisnames=TRUE, axis.lty=1, las=2, legend.text = colnames(dp), xlab="Alphabet Count", ylab="Proportion")
+```
+
+# Compute 3x3 Determinant
+The computeDeterminant3(myMatrix) function calculates the determinant of a 3 by 3 matrix. 
+
+## Example 1:
+
+```{r}
+myMatrix2 = matrix(c(4,8,25,
+                    4,56,6,
+                    7,45,9), nrow=3, byrow=TRUE);
+
+computeDeterminant3(myMatrix2)
+```
+Checking the answer with the built-in determinant function:
+```{r}
+det(myMatrix2)
+```
+## Example 2
+```{r}
+myMatrix3 = matrix(c(1,2,3,
+                    4,5,6,
+                    7,8,9), nrow=3, byrow=TRUE);
+
+zeroIsh(computeDeterminant3(myMatrix3))
+```
+Checking the answer with the built-in determinant function:
+```{r}
+
+zeroIsh(det(myMatrix3))
+```

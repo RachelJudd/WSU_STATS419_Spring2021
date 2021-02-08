@@ -8,7 +8,7 @@ github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
 
 
 # Handshake
-```{r}
+
 library(plotrix);
 library(pracma);
 
@@ -59,10 +59,10 @@ handShake = function(n=1, plotMe=TRUE)
   }
   h;
 }
-```
+
 
 # Alphabet Matrix
-```{r}
+
 countLetterInString=function(str,letter)
 {
   nchar(as.character(str)) -nchar( gsub(letter, "", str,fixed=TRUE))
@@ -188,3 +188,4 @@ github.remote = "https://raw..../";
 #           source(include.me);
 #           }
 ```
+
