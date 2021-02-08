@@ -21,12 +21,13 @@ github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Sprin
 
 if(which.github == "remote")
   {
-  include.me = paste0( github.remote, "functions/functions-intro.R");
+  include.me = paste0( github.local,"functions/functions-intro.R");
   library(devtools);
-  source_url(include.me);
+  source_url(github.local);
   } else {
-          include.me = paste0( github.local, "functions/functions-intro.R");
-          source(include.me);
+          include.me = paste0( github.remote, "functions/functions-intro.R");
+          library(devtools);
+          source_url(include.me);
           }
 ```
 
