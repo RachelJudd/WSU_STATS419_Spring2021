@@ -1,3 +1,5 @@
+
+
 ```{r}
 # github.monte
 which.github = "local";  # local ... remote 
@@ -107,7 +109,7 @@ rowSums(prop)
 
 
 ```{r}
-myMatrix = matrix(c(0.06675487,0.01407265,0.02706279,0.03127255,0.1311042,0.02958865,0.01972576,0.05304306,0.06916045,0.002285302,0.002405581,0.03175367,0.02357469,0.06567236,0.07914361,0.02165023,0.0008419533,0.06687515,0.06879962,0.09514073,0.02934809,0.01166707,0.01563628,0.001443349,0.01299014,0.0003608371,0.02862641,
+myMatrix1 = matrix(c(0.06675487,0.01407265,0.02706279,0.03127255,0.1311042,0.02958865,0.01972576,0.05304306,0.06916045,0.002285302,0.002405581,0.03175367,0.02357469,0.06567236,0.07914361,0.02165023,0.0008419533,0.06687515,0.06879962,0.09514073,0.02934809,0.01166707,0.01563628,0.001443349,0.01299014,0.0003608371,0.02862641,
                     0.07113095,0.01413690,0.02708333,0.03764881,0.1281250,0.02678571,0.01934524,0.05193452,0.06681548,0.002380952,0.002083333,0.03392857,0.02157738,0.07202381,0.07604167,0.02053571,0.0008928571,0.06309524,0.07098214,0.09464286,0.03065476,0.01101190,0.01443452,0.001636905,0.01205357,0.0005952381,0.02842262), nrow=2, byrow=TRUE);
 prop2 = prop
 dp = data.frame( draft = c(0.06675487,0.01407265,0.02706279,0.03127255,0.1311042,0.02958865,0.01972576,0.05304306,0.06916045,0.002285302,0.002405581,0.03175367,0.02357469,0.06567236,0.07914361,0.02165023,0.0008419533,0.06687515,0.06879962,0.09514073,0.02934809,0.01166707,0.01563628,0.001443349,0.01299014,0.0003608371,0.02862641), 
@@ -116,7 +118,7 @@ rownames(dp)=c(letters,"OTHER");
 
 prop2 = do.call(rbind, dp);
 
-barplot(myMatrix, names.arg=(rownames(dp)), cex.names=0.78, cex.axis=0.9, beside = TRUE, ylim = c(0,0.14),axisnames=TRUE, axis.lty=1, las=2, legend.text = colnames(dp), xlab="Alphabet Count", ylab="Proportion")
+barplot(myMatrix1, names.arg=(rownames(dp)), cex.names=0.78, cex.axis=0.9, beside = TRUE, ylim = c(0,0.14),axisnames=TRUE, axis.lty=1, las=2, legend.text = colnames(dp), xlab="Alphabet Count", ylab="Proportion")
 ```
 
 
@@ -159,19 +161,19 @@ computeDeterminant3=function(myMatrix)
 ```
 
 ```{r}
-myMatrix = matrix(c(1,2,3,
+myMatrix2 = matrix(c(1,2,3,
                     4,5,6,
                     7,8,9), nrow=3, byrow=TRUE);
-zeroIsh(det(myMatrix))
-zeroIsh(computeDeterminant3(myMatrix))
+zeroIsh(det(myMatrix2))
+zeroIsh(computeDeterminant3(myMatrix2))
 ```
 
 ```{r}
-myMatrix = matrix(c(4,8,25,
+myMatrix3 = matrix(c(4,8,25,
                     4,56,6,
                     7,45,9), nrow=3, byrow=TRUE);
-zeroIsh(det(myMatrix))
-zeroIsh(computeDeterminant3(myMatrix))
+zeroIsh(det(myMatrix3))
+zeroIsh(computeDeterminant3(myMatrix3))
 ```
 
 

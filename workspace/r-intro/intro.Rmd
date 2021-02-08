@@ -10,32 +10,34 @@ output:
 ```{r}
 github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
 include.me = paste0(github.monte, "humanVerseWSU/master/humanVerseWSU/R/functions-maths.R");
-library(devtools);  
+library(devtools);
 source_url(include.me);
 ```
 ```{r}
 which.github = "remote";  # local ... remote 
 
 github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
-github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R";
 
-if(which.github == "remote")
-  {
-  include.me = paste0( github.local,"functions/functions-intro.R");
-  library(devtools);
-  source_url(github.local);
-  } else {
-          include.me = paste0( github.remote, "functions/functions-intro.R");
-          library(devtools);
-          source_url(include.me);
-          }
+
+
+# if(which.github == "remote")
+#   {
+#   include.me = paste0(github.remote,"https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R");
+#   library(devtools);
+#   source_url(include.me);
+#   } else {
+#           include.me = paste0( github.local, "functions/functions-intro.R");
+#           library(devtools);
+#           source(include.me);
+#           }
 ```
 
 
 ```{r}
-which.github = "local"
-
-github.local = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/";
+# which.github = "local"
+# 
+# github.local = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/";
 
 library(plotrix);
 library(pracma);
