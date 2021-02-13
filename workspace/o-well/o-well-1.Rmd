@@ -1,0 +1,155 @@
+---
+title: "R Notebook: o-well 1 draft 1"
+author: Rachel Judd [rachel.judd]
+output: html_notebook
+---
+
+
+
+```{r}
+which.github = "local";  # local ... remote 
+
+github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+
+
+
+if(which.github == "remote")
+  {
+  mypath = paste0(github.remote, "workspace/o-well/")
+  # include.me = paste0(github.remote,"https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R");
+#   library(devtools);
+#   source_url(include.me);
+  } else {
+    mypath = paste0(github.local, "workspace/o-well/")
+#           include.me = paste0( github.local, "functions/functions-intro.R");
+#           library(devtools);
+#           source(include.me);
+  }
+path.data = paste0(mypath, "data/")
+```
+
+```{r}
+Sys.setenv(JAVA_HOME="C:/Program Files/Java/jre1.8.0_281")
+library(tabulizer)
+
+pdf.file = paste0(path.data, "Well-23.pdf");
+pdf.dat = extract_tables(pdf.file);
+owell.metals = data.frame(pdf.dat[[1]][-1,c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)]);
+names(owell.metals) = pdf.dat[[1]][1,c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)];
+head(owell.metals);
+
+```
+
+```{r}
+
+owell.metals = owell.metals[-c(1,25,26,27,28,29,30), ];
+```
+
+```{r}
+# names(NA,"Well 1","Well 2","Well 3","Well 4","Well 5","Well 6","Well 7","Well 8","Well 9","Well 10","Well 11","Well 12","Well 13","Well 14","Well 15","Well 16","Well 17","Well 18","Well 19","Well 20","Well 21","Well 22","Well 23");
+# make.names(names);
+# .rowNamesDF(owell.metals) = (NA,"Well 1","Well 2","Well 3","Well 4","Well 5","Well 6","Well 7","Well 8","Well 9","Well 10","Well 11","Well 12","Well 13","Well 14","Well 15","Well 16","Well 17","Well 18","Well 19","Well 20","Well 21","Well 22","Well 23");
+```
+
+```{r}
+latitudeMatrix = matrix(c(28.63811,28.603468,28.575879,28.620362,28.560586,28.602789,28.488311,28.572316,28.438361,28.553648,28.651337,28.584441,28.512148,28.448275,28.625897,28.612935,28.54015,29.248557,29.234329,29.291152,29.336922,29.319727,29.24509));
+owell.metals$Latitude = latitudeMatrix;
+```
+
+```{r}
+longitudeMatrix = matrix(c(34.798061,34.810458,34.844785,34.876969,34.990046,34.992551,34.976893,34.807835,34.786616,34.903739,34.876725,35.186706,34.957213,34.93563,35.051013,35.218209,35.065537,35.017044,34.969706,34.977884,34.981922,35.032035,35.185575));
+owell.metals$Longitude = longitudeMatrix;
+```
+
+```{r}
+altitudeMatrix = matrix(c(257,1652,924,1815,1408,2640,956,1312,595,2291,3168,2307,1089,864,1494,2284,1167,1032,279,403,552,1245,2831));
+owell.metals$Altitude.ft = altitudeMatrix;
+```
+
+```{r}
+faultMatrix = matrix(c(0,0,0,333.33,0,333.33,0,1666.67,2000,0,0,0,1333.33,1333.33,166.67,0,0,4333.29,4666.62,8000,7666.67,3666.67,0));
+owell.metals$Fault = faultMatrix
+```
+
+```{r}
+
+owell.metalsGeologyList = list("sand,granite","sand,granite,alkaline","alkaline,conglomerate","alkaline","volcanic,granite","volcanic","gypsum","alkaline","gypsum","volcanic,conglomerate","alkaline,granite",NA,"gypsum","gypsum","volcanic","volcanic,granite,alkaline","gypsum,conglomerate","sand","sand","sand","sand","sand","alkaline,granite");
+owell.metals$Geology = owell.metalsGeologyList
+
+```
+
+
+```{r}
+pdf.file = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/workspace/o-well/Well-23.pdf";
+pdf.dat2 = extract_tables(pdf.file);
+owell.chemistry = data.frame(pdf.dat2[[2]][-1,c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21)]);
+names(owell.chemistry) = pdf.dat2[[2]][1,c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21)];
+head(owell.chemistry);
+```
+
+```{r}
+owell.chemistry = owell.chemistry[-c(1,19,20,21,22,28,29,30,31), ]
+```
+
+```{r}
+
+
+latitudeMatrix = matrix(c(28.63811,28.603468,28.575879,28.620362,28.560586,28.602789,28.488311,28.572316,28.438361,28.553648,28.651337,28.584441,28.512148,28.448275,28.625897,28.612935,28.54015,29.248557,29.234329,29.291152,29.336922,29.319727,29.24509));
+owell.chemistry$Latitude = latitudeMatrix;
+```
+
+```{r}
+longitudeMatrix = matrix(c(34.798061,34.810458,34.844785,34.876969,34.990046,34.992551,34.976893,34.807835,34.786616,34.903739,34.876725,35.186706,34.957213,34.93563,35.051013,35.218209,35.065537,35.017044,34.969706,34.977884,34.981922,35.032035,35.185575));
+owell.chemistry$Longitude = longitudeMatrix;
+```
+
+```{r}
+altitudeMatrix = matrix(c(257,1652,924,1815,1408,2640,956,1312,595,2291,3168,2307,1089,864,1494,2284,1167,1032,279,403,552,1245,2831));
+owell.chemistry$Altitude.ft = altitudeMatrix;
+```
+
+```{r}
+faultMatrix = matrix(c(0,0,0,333.33,0,333.33,0,1666.67,2000,0,0,0,1333.33,1333.33,166.67,0,0,4333.29,4666.62,8000,7666.67,3666.67,0));
+owell.chemistry$Fault = faultMatrix
+```
+
+
+```{r}
+owell.chemistryGeologyList = list(NA,"sand,granite","sand,granite,alkaline","alkaline,conglomerate","alkaline","volcanic,granite","volcanic","gypsum","alkaline","gypsum","volcanic,conglomerate","alkaline,granite",NA,"gypsum","gypsum","volcanic","volcanic,granite,alkaline","gypsum,conglomerate","sand","sand","sand","sand","sand","alkaline,granite");
+owell.chemistry$Geology = owell.chemistryGeologyList
+```
+
+```{r}
+wells = list();
+wells$saudi = list();
+wells$saudi$chemistry = owell.chemistry;
+wells$saudi$metals = owell.metals;
+```
+
+```{r}
+storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+  {
+  if(quote == "") { quote = FALSE; }
+  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  }
+
+readFromPipe = function(file, header=TRUE, quote="", sep="|")
+  {
+  utils::read.csv(file, header=header, quote=quote, sep=sep);
+  }
+```
+
+```{r}
+if(which.github != "remote")
+  {
+myfile = paste0(path.data, "wells.rds")
+saveRDS(wells, file = myfile)
+# myfile = paste0(path.data, "wells.txt")
+# storeToPipe(wells, file = myfile)
+} else {
+  myfile = paste0(path.data, "wells.rds")
+  print(myfile)
+}
+```
+
