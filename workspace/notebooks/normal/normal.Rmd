@@ -1,0 +1,241 @@
+---
+title: "normal:  the derivation of normality and most test statistics and distributions"
+output: html_notebook
+---
+
+# Carl the Great?
+
+The normal distribution is "gaussian" <https://en.wikipedia.org/wiki/Gaussian_function>.  
+
+This was developed by Carl Friedrich Gauss <https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss>.
+
+- Humble beginnings, Child prodigy, access to education
+- Labeled "Princeps mathematicorum" (puffery?)
+- History sounds like PR/marketing materials for Germany and Protestantism
+- Died February 23, 1855
+- The number 3:  * every positive integer is representable as a sum of at most three triangular numbers on 10 July and then jotted down in his diary the note: "ΕΥΡΗΚΑ! num = Δ + Δ' + Δ". *  Correlated to the "handshake" problem:  <https://en.wikipedia.org/wiki/Triangular_number>
+- Gauss had six children. Eugene shared a good measure of Gauss's talent in languages and computation.  Gauss eventually had conflicts with his sons. He did not want any of his sons to enter mathematics or science for "fear of lowering the family name", as he believed none of them would surpass his own achievements.
+
+### General Function (Exponential with Concave Quadratic)
+
+Gaussian functions arise by composing the exponential function with a concave quadratic function:
+
+$$ f(x) = e^ { (\alpha x^2 + \beta x + \gamma) } $$
+
+#### Include Stuff
+```{r}
+# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-dataframe.R
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-dataframe.R");  
+#library(devtools);
+#source_url(include.me);
+source(include.me); # subsetDataFrame
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-str.R");  
+source(include.me); # trimMe
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-vector.R");  
+source(include.me); # findAllIndexesWithValueInVector
+
+
+include.me = paste0(github.monte, "humanVerse/main/misc/functions-integrate.R");  
+source(include.me); # parseNumericalFunctionString
+
+
+# https://brand.wsu.edu/visual/colors/
+wsu.crimson = "#981e32";
+wsu.gray    = "#717171";
+```
+
+
+$$ f(x) = e^ { (\alpha x^2 + \beta x + \gamma) } $$
+
+#### Visualizing
+```{r}
+# source("C:/_git_/github/MonteShaffer/humanVerse/misc/functions-integrate.R");
+
+fstr = "FUN: exp( alpha * x^2 + beta * x + gamma) 
+          > alpha = 1/2; beta = 2/3; gamma = 1/8; x.domain = c(2,10);
+        ";
+fprep = parseNumericalFunctionString(fstr);
+
+finfo = buildNumericalDataForIntegral(fprep);
+plot(finfo);
+```
+
+
+
+where 
+
+$ \alpha = \frac{-0.5}{c^2} $
+$ \beta = \frac{b}{c^2} $
+$ \gamma = \frac{0.5 \times (log(a) - b^2)}{c^2} $
+
+```{r}
+# source("C:/_git_/github/MonteShaffer/humanVerse/misc/functions-integrate.R");
+
+fstr = "FUN: exp( -1/2 / (c)^2 * x^2 + b / (c)^2 * x + (1/2 * log(a) - (b)^2 ) / ((c)^2) ) 
+          > a = 1; b = 2; c = 3; x.domain = c(-6,10);
+        ";
+fprep = parseNumericalFunctionString(fstr);
+
+finfo = buildNumericalDataForIntegral(fprep);
+plot(finfo);
+```
+
+The Gaussian functions are thus those functions whose logarithm is a concave quadratic function.
+
+[Source: Wikipedia]
+
+### Properties
+
+It has unique properties which statisticians love:
+- erfz <https://en.wikipedia.org/wiki/Error_function>
+- Related to Gaussian integral $ \int_{- \infty}^{\infty} e^{-x^2} dx = \sqrt{\pi} $ (NOT \Inf)
+- Reminds me of Euler's identity $ e^{i \pi} + 1 = 0 $ (where i is the imaginary number $\sqrt{-1}$).  Contemporaries, who came first.  Euler hung out with the Bernoulli brothers in Санкт-Петербург ... well one of the brothers. [brachistochrone] problem.
+- If $ a = \frac{1}{ c \sqrt{2 \times \pi} } $, the area of the Gaussian function is equal to one exactly ... This is the "normal curve" ...
+
+$$ g(x) = \frac{1}{\sigma \sqrt{2 \times \pi}} e^{ \Left( \frac{-(x - \mu)^2}{2 \sigma ^2} \Right ) } $$
+
+OOPS! <https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols#:~:text=%20%20%20%20Symbol%20%20%20,pi%20and%20varpi%20%208%20more%20rows>
+
+$$ g(x) = \frac{1}{\sigma \sqrt{2 \pi}} e^{ \left( \frac{-(x - \mu)^2}{2 \sigma ^2} \right ) } $$
+
+where $\mu$ is the "mean" and $\sigma$ is the "standard deviation"
+
+### The "Bell Curve"
+
+```{r}
+# source("C:/_git_/github/MonteShaffer/humanVerse/misc/functions-integrate.R");
+
+fstr = "g(x): 1/( sigma * sqrt( 2 * pi )) * exp( (-1 * ( x - mu )^2 / (2 * sigma ^ 2) ) )
+          > mu = 0; sigma = 1; x.domain = c(-4,4);
+        ";
+fprep = parseNumericalFunctionString(fstr);
+
+finfo = buildNumericalDataForIntegral(fprep);
+plot(finfo);
+
+fint = computeNumericalIntegration(finfo, method="string", start=-10, stop=10, showPolygons = TRUE);  # this uses trapezoidal method ( see https://planetcalc.com/5494/ )
+fint$total;
+
+# fint$total ... does it equal 1?  What is the bug? %Yes it does. I don't know what the bug is. 
+```
+
+
+# Basic mechanics of my "numerical integration" functions
+```{r}
+fstr = "f(x): 2 * x + 3
+          > x.domain = c(-10,10);
+        ";
+
+finfo = buildNumericalDataForIntegral(fstr, dxi = 0.01);
+  # one function can be skipped ... called internally
+plot(finfo);
+abline(h = 0, col=wsu.gray);
+
+
+fint = computeNumericalIntegration(finfo, method="string", start=-4, stop=4, showPolygons = TRUE);
+
+str(fint);
+fint$positive;
+fint$negative;
+fint$total;
+```
+
+
+```{r}
+fstr = "f(x): 2 * x + 3
+          > x.domain = c(-10,10);
+        ";
+
+finfo = buildNumericalDataForIntegral(fstr, dxi = 0.1);
+  # one function can be skipped ... called internally
+plot(finfo);
+abline(h = 0, col=wsu.gray);
+
+
+fint = computeNumericalIntegration(finfo, method="string", start=-4, stop=4, showPolygons = TRUE);
+
+str(fint);
+str(fint);
+fint$positive;
+fint$negative;
+fint$total;
+```
+What is the "true value"?  What is "dxi"?  Why is it off a bit from the true value?
+
+# Assumptions of Mathematical Statistics
+
+- The "iid" assumption (IID) ... independent and identically distributed.
+
+## Probability
+```{r}
+sample( 1:10 );
+```
+
+## Gambler's Fallacy
+The "gambler's fallacy" is that there is "history or memory" in probability.
+
+```{r}
+for(j in 1:10)
+  {
+  print( sample( 1:2 ) );  # head/tails?
+  }
+# ?rbinom
+```
+
+## Randomness as Random Variable
+
+In statistics, this assumption of IID makes a variable "random" or "stochastic"
+
+But let's look at the fundamental concept of IID.
+
+```{r}
+# ?sample
+sample( 1:10, replace=TRUE );
+```
+
+```{r}
+set.seed(123);
+( sss = sample( 1:10, replace=TRUE ) );
+sort(sss);
+```
+
+```{r}
+set.seed(12222015);
+( sss = sample( 1:10, replace=TRUE ) );
+sort(sss);
+```
+
+Under certain conditions (<https://math.stackexchange.com/questions/2073322>), we do not violate any assumptions yet.
+
+## Permutations (Combinations) of Cards
+
+If my brother Micah draws a straight in a 52-card deck off the deal, and I (his older brother by 10 years) also draw a straight in the same setup, but my high-card is one number higher than his, I WIN!  And he is not happy.  EASTER EGG:  +10 ... compute the probability that in the same deal of 52-card deck, Micah gets a straight AND Monte gets a straight with high-card one number higher!
+
+## Gambler's (Not) Fallacy
+So obviously, card games are based on probabilities and "gamblers" use knowledge about what they can see (their cards, cards visible on the table, and so on).  These contingencies are "constrained probabilities" ... a future event depends on what is remaining in the deck.
+
+These are "dependent" events and IID does not play nice.
+
+Under IID, we have a nice math property about probabilities and functions:
+
+UNDER IID
+$$ f(x,y) = f(x) \times f(y) $$
+
+This is the engine that makes most "inferential statistics" work (e.g., "MLE")
+
+## Conlusion
+Obviously if it is violated, the nice mathematical and statistical properties start to deteriorate.  Of course, there are some work arounds, but this is a crucial point.  As a data analyst, I don't marry myself to these assumptions nor do I join the religion of those that do.
+
+So how to determine if something is independent?  If dependent, can "independent" assumptions approximate a true value?  How certain can you be of such approximations?  Can you control-for "dependent" assumptions?
+
+## O-well
+Think about these things as you work on 23-wells in Arabia.  Are the readings from this group independent?  (is it a sample or population)  Is there an underground aquifer that connects them?  Is there a relationship to a fault line?  To the geology of the rocks?
+
+
+
+
+

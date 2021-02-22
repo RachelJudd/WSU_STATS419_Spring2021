@@ -1,0 +1,316 @@
+---
+title: 'R Notebook: o-well 1'
+author: "Rachel Judd [rachel.judd]"
+output:
+  html_document:
+    df_print: paged
+---
+# Setting up Remote Access
+```{r}
+which.github = "local";  # local ... remote 
+
+github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+
+
+
+if(which.github == "remote")
+  {
+  mypath = paste0(github.remote, "workspace/o-well/")
+  # include.me = paste0(github.remote,"https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R");
+#   library(devtools);
+#   source_url(include.me);
+  } else {
+    mypath = paste0(github.local, "workspace/o-well/")
+#           include.me = paste0( github.local, "functions/functions-intro.R");
+#           library(devtools);
+#           source(include.me);
+  }
+path.data = paste0(mypath, "data/")
+```
+
+
+```{r}
+storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+  {
+  if(quote == "") { quote = FALSE; }
+  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  }
+
+readFromPipe = function(file, header=TRUE, quote="", sep="|")
+  {
+  utils::read.csv(file, header=header, quote=quote, sep=sep);
+  }
+```
+
+# Reading in the Data
+```{r}
+file = paste0(path.data, "saudi.txt");
+# readFromPipe(file, header=TRUE, quote="", sep="|");
+saudi = data.frame(readFromPipe(file, header=TRUE, quote="", sep="|"))
+```
+
+
+# Descriptive Statistics
+```{r}
+#https://stackoverflow.com/questions/23163863/mean-of-a-column-in-a-data-frame-given-the-columns-name
+summary(saudi[["As"]]);
+sd(saudi[["As"]]);
+boxplot(saudi[["As"]]);
+```
+
+```{r}
+summary(saudi[["B"]]);
+sd(saudi[["B"]]);
+boxplot(saudi[["B"]]);
+```
+
+```{r}
+summary(saudi[["Ba"]]);
+sd(saudi[["Ba"]]);
+boxplot(saudi[["Ba"]]);
+```
+
+```{r}
+summary(saudi[["Be"]]);
+sd(saudi[["Be"]]);
+boxplot(saudi[["Be"]]);
+```
+
+```{r}
+summary(saudi[["Cd"]]);
+sd(saudi[["Cd"]]);
+boxplot(saudi[["Cd"]]);
+```
+
+```{r}
+summary(saudi[["Co"]]);
+sd(saudi[["Co"]]);
+boxplot(saudi[["Co"]]);
+```
+
+```{r}
+summary(saudi[["Cr"]]);
+sd(saudi[["Cr"]]);
+boxplot(saudi[["Cr"]]);
+```
+
+```{r}
+summary(saudi[["Cu"]]);
+sd(saudi[["Cu"]]);
+boxplot(saudi[["Cu"]]);
+```
+
+```{r}
+summary(saudi[["Fe"]]);
+sd(saudi[["Fe"]]);
+boxplot(saudi[["Fe"]]);
+```
+
+```{r}
+summary(saudi[["Hg"]]);
+sd(saudi[["Hg"]]);
+boxplot(saudi[["Hg"]]);
+```
+
+```{r}
+summary(saudi[["Mn"]]);
+sd(saudi[["Mn"]]);
+boxplot(saudi[["Mn"]]);
+```
+
+```{r}
+summary(saudi[["Mo"]]);
+sd(saudi[["Mo"]]);
+boxplot(saudi[["Mo"]]);
+```
+
+```{r}
+summary(saudi[["Pb"]]);
+sd(saudi[["Pb"]]);
+boxplot(saudi[["Pb"]]);
+```
+
+```{r}
+summary(saudi[["Se"]]);
+sd(saudi[["Se"]]);
+boxplot(saudi[["Se"]]);
+```
+
+```{r}
+summary(saudi[["Zn"]]);
+sd(saudi[["Zn"]]);
+boxplot(saudi[["Zn"]]);
+```
+
+```{r}
+summary(saudi[["pH"]]);
+sd(saudi[["pH"]]);
+boxplot(saudi[["pH"]]);
+```
+
+```{r}
+summary(saudi[["Eh"]]);
+sd(saudi[["Eh"]]);
+boxplot(saudi[["Eh"]]);
+```
+
+```{r}
+summary(saudi[["TDS"]]);
+sd(saudi[["TDS"]]);
+boxplot(saudi[["TDS"]]);
+```
+
+```{r}
+summary(saudi[["Ca"]]);
+sd(saudi[["Ca"]]);
+boxplot(saudi[["Ca"]]);
+```
+
+```{r}
+summary(saudi[["K"]]);
+sd(saudi[["K"]]);
+boxplot(saudi[["K"]]);
+```
+
+```{r}
+summary(saudi[["Mg"]]);
+sd(saudi[["Mg"]]);
+boxplot(saudi[["Mg"]]);
+```
+
+```{r}
+summary(saudi[["Na"]]);
+sd(saudi[["Na"]]);
+boxplot(saudi[["Na"]]);
+```
+
+```{r}
+summary(saudi[["HCO3"]]);
+sd(saudi[["HCO3"]]);
+boxplot(saudi[["HCO3"]]);
+```
+
+```{r}
+summary(saudi[["Cl"]]);
+sd(saudi[["Cl"]]);
+boxplot(saudi[["Cl"]]);
+```
+
+```{r}
+summary(saudi[["SO4"]]);
+sd(saudi[["SO4"]]);
+boxplot(saudi[["SO4"]]);
+```
+
+```{r}
+summary(saudi[["NO3"]]);
+sd(saudi[["NO3"]]);
+boxplot(saudi[["NO3"]]);
+```
+
+```{r}
+summary(saudi[["F"]]);
+sd(saudi[["F"]]);
+boxplot(saudi[["F"]]);
+```
+
+```{r}
+summary(saudi[["PO4"]]);
+sd(saudi[["PO4"]]);
+boxplot(saudi[["PO4"]]);
+```
+
+```{r}
+summary(saudi[["TH"]]);
+sd(saudi[["TH"]]);
+boxplot(saudi[["TH"]]);
+```
+
+```{r}
+summary(saudi[["TA"]]);
+sd(saudi[["TA"]]);
+boxplot(saudi[["TA"]]);
+```
+
+```{r}
+summary(saudi[["TS"]]);
+sd(saudi[["TS"]]);
+boxplot(saudi[["TS"]]);
+```
+
+```{r}
+summary(saudi[["SS"]]);
+sd(saudi[["SS"]]);
+boxplot(saudi[["SS"]]);
+```
+
+```{r}
+summary(saudi[["COD"]]);
+sd(saudi[["COD"]]);
+boxplot(saudi[["COD"]]);
+```
+
+```{r}
+summary(saudi[["BOD"]]);
+sd(saudi[["BOD"]]);
+boxplot(saudi[["BOD"]]);
+```
+
+```{r}
+summary(saudi[["DO"]]);
+sd(saudi[["DO"]]);
+boxplot(saudi[["DO"]]);
+```
+
+```{r}
+summary(saudi[["Latitude"]]);
+sd(saudi[["Latitude"]]);
+boxplot(saudi[["Latitude"]]);
+```
+
+```{r}
+summary(saudi[["Longitude"]]);
+sd(saudi[["Longitude"]]);
+boxplot(saudi[["Longitude"]]);
+```
+
+```{r}
+summary(saudi[["Altitude"]]);
+sd(saudi[["Altitude"]]);
+boxplot(saudi[["Altitude"]]);
+```
+
+```{r}
+summary(saudi[["Fault"]]);
+sd(saudi[["Fault"]]);
+boxplot(saudi[["Fault"]]);
+```
+
+```{r}
+# print(saudi[["Geology"]]);
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+v = c("sand,granite","sand,granite,alkaline","alkaline,conglomerate","alkaline","volcanic,granite","volcanic","gypsum","alkaline","gypsum","volcanic,conglomerate","alkaline,granite","granite,alkaline","gypsum","gypsum","volcanic","volcanic,granite,alkaline","gypsum,conglomerate","sand","sand","sand","sand","sand","alkaline,granite");
+getmode(v);
+```
+
+
+```{r}
+cor(saudi[["Altitude"]],saudi[["pH"]]);
+
+```
+```{r}
+cor(saudi[["Fault"]],saudi[["pH"]])
+```
+
+```{r}
+cor(saudi[["Altitude"]],saudi[["Zn"]])
+```
+```{r}
+
+```
+

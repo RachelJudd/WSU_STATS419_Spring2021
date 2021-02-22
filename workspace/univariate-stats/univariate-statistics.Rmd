@@ -1,0 +1,525 @@
+---
+title: 'R Notebook: review of univariate ''statistics'''
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# git add .
+# git status
+# git commit -m "first commit"
+# git push -u origin HEAD:main
+```
+
+# Statistics
+
+Those in the field of "statistics" need to preserve their importance, so claim they are their own discipline or field.  In reality, that is unlikely not the case.  Data analytics is likely as old as human history.  Counting is the basis of all data analysis.  
+
+## Stochastic
+Modern statistics is the merging of "probability theory" developed by mathematicians in the 1700-1800s and pragmatic data analysts to answer the age-old question:  "is that difference big?"
+
+```{r}
+10-7;
+10-3;
+7-3;
+3-0;
+```
+
+The society at that time was very differentiated.  For example, Florence Nightingale was "upper class" and her perceived calling to go into nursing was frowned upon by her parents because it was a profession of the lower class.  As part of this stratification, the "upper" class would justify their place in the world and justify why they enslaved nations in the establishment of their Empires.
+
+## Ease of computation
+
+Modern statistics is based on "summing" numbers or differences because it was easiest to do before computers.  
+
+## Practical Implications:  what does the difference mean?
+
+Decision makers wanted (and still want) a direct answer: what does the data mean?  What action can I take with this data?  How certain (e.g., how much risk = probability) is associated with this course of action?
+
+This led to the invention of "inferential statistics".
+
+# Computation Simplicity Tied to Mean
+
+Much of the modern statistics we have entrenched within data analytics is a result of the computation capabilities of the technologies.
+
+## Manual computation of mean and variance
+
+These algorithms demonstrate how the calculations were performed back in the paper-and-pencil computation days, when statistics became its own discipline.
+
+
+### Mean
+
+I need to add up all of the numbers and divide by how many numbers there are.  This computationally is quite simple.  Even early computing programs (like punch cards) liked this approach.  You only have to keep three numbers in memory:  the count `n` (how many numbers), the `sum` (the cumulative sum), and the current number `x` to be assessed.  At the end, a final number is computed `mean` which takes the `sum` and divides it by the count `n`.  **Note:** this algorithm doesn't need to know how many numbers there are.  Sometimes the data analyst wouldn't know, just have a big pile of numbers to compute.  When finished, the count `n` would be known.
+
+In early computers the "memory" and "number of tasks" were essential. Early programming would count the total number of tasks to be performed.  Setup: 2 tasks; for-loop: 2*number of data; Conclusion: 1 tasks.  In the example below: $ 2 + 2 \times 9 + 1 = 21 $ tasks.  
+
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  }
+
+mean = sum/n;
+
+n;
+sum;
+mean;
+```
+
+### Sample Variance Theoretical (two-step)
+
+In the traditional "two-step" approach, we first compute the mean as described above.  Then we have to compute a `deviation` and its squared version `deviation2`.  From this we can tally the "sum of squares" `sum2`.  A deviation is a distance from the mean which we square.  We sum up these squared distances.
+
+[Question:  why not just use the "absolute value"?]
+
+We have three new variables that need to be stored in memory.  In this approach, we have to do the `for-loop` twice.  Finally, we compute the variance similar to the mean, a simple division.  Then, if we want the standard deviation we have to compute a square root.
+
+Additional technical requirements--  Setup: 3 tasks; for-loop: 2*number of data; Conclusion: 1 simple task, 1 complicated task.  For the given example, we now have 44 tasks, of which only one is a square-root computation.  
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  }
+mean = sum/n;
+
+sum2 = 0;  # sums squared
+
+for(x in xs)
+  {
+  deviation = x - mean;
+  deviation2 = deviation*deviation;
+  sum2 = sum2 + deviation2;
+  }
+
+s.var = sum2/(n - 1);
+s.sd  = sqrt(s.var);
+
+n;
+sum;
+mean;
+sum2;
+s.var;
+s.sd;
+
+```
+
+### Sample Variance Naive
+
+Because there is a mathematical trick about the squares of sums and sums of squares, we can perform the naive calculation, and we only have to go through a `for-loop` one time.
+
+Setup: 4 tasks; for-loop: 2*number of data; Conclusion: 2 simple tasks, 1 complicated task.  In the example below: $ 4 + 2 \times 9 + 2 + 1 = 25 $ tasks. 
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+sum2 = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  x2 = x*x;
+  sum2 = sum2 + x2;
+  }
+
+mean = sum/n;
+s.var = (sum2 - (sum * sum)/n)/(n - 1);
+s.sd  = sqrt(s.var);
+
+n;
+sum;
+mean;
+sum2;
+s.var;
+s.sd;
+        
+```
+
+### Performance Summary
+
+In the above example, computing the mean-naive sample variance costs about `120%` of what only the mean computation would take.  Computing the mean-theoretical sample variance costs about `210%` of what only the mean computation would take.
+
+
+
+### Conclusion
+
+We need to review some key insights from this example:
+
+- Distance as "deviation" is embedded in the variance calculations
+- Sums of squares is an easy task.  You have a table of "squared values" and only have to compute one square root.  
+- When we review many of the foundational formulas of statistics (  variance, correlation, regression [ordinary least squares]), we see this sums of differences squared all of the time.
+
+Mathematical statistics has evolved based on the computational ease of the mean and sums of squares.
+
+As a data analyst, what does this mean for you:
+
+- When you program, efficiency may not immediately matter, so in a first iteration get it done!  In future iterations, you should improve on efficiency if possibly, and as necessary.
+- We live in an era with different computing capabilities, so we should not anchor ourselves to tradition exclusively; innovation comes from recognizing the limitations of the past to try and create a better future.
+- The "mean" is the foundation of most inferential statistics.  Most model-building approaches gravitate towards the "mean" or average response.  With some data analytics problems, that is not what we want to analyze per se.  
+- Maybe the outliers are the data of interest?
+
+### Vector computations using R
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+xbar = sum(xs)/length(xs);
+xbar;
+
+svar = (sum((xs - xbar)^2 )) / (length(xs) - 1);
+svar;
+
+sd = sqrt(svar);
+sd;
+
+```
+### Concerns with this approach?
+
+[TODO:  Please review and come up with some limitations of this approach.]
+
+
+
+
+
+# Sorting Data
+
+Sorting data is nontrivial.  Well it was until we had computers.  Now it is trivial.  Let's review several sorting algorithms.
+
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+
+library(devtools);  # need to get rid of this dependency ...
+source_url( paste0(  github.monte, "humanVerse/main/misc/functions-sort.R" ) );
+
+
+# https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-sort.R
+```
+
+The current R function `sort` is the fastest possible algorithm after computer-scientists spent a long time on very slow computers devising the most efficient algorithm.
+
+These functions are to demonstrate the process, and you should just use `sort` for most tasks.
+
+We have to store in memory either all of the data, or an index to a location (or pointer) of all of the data.  Memory and computation complexity are much, much higher.  The code written is based on low-level C logic so does not rely on built-in functions like `min()` or `max()` or `setdiff()`.
+
+<https://github.com/MonteShaffer/humanVerse/blob/main/misc/functions-sort.R>
+
+
+## Laundry-sorting (sortMe.insertion)
+
+Review the output and the function.  
+
+```{r}
+# randomize order every time
+# set.seed(1234);  # set.seed(NULL);
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+sortMe.insertion(xs);
+```
+
+- Describe "how the algorithm" works.  Why did I call it "laundry-sorting"?
+- Given the input, what is the number of tasks that need to be performed to sort using this approach?
+- The stopping rule could be improved.  Any ideas on how?
+
+## Min/Max (sortMe.selection)
+
+Review the output and the function. During every `for-loop` I can compute the minimum.  I choose to also compute the maximum at the same time during the looping process.
+
+```{r}
+# randomize order every time
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+sortMe.selection(xs);
+```
+
+NOTES ?
+
+## Swap-meet (sortMe.bubble)
+
+Review the output and the function. 
+
+
+```{r}
+# randomize order every time
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+sortMe.bubble(xs);
+```
+
+NOTES ?
+
+
+## Benchmarks with default `sort ... radix`
+
+For numeric vectors less than $2^31$ which `?sort` defines as a short vector, the `radix` method is used; otherwise the `shell` method is used.  This are partitioning approaches that get much more complex to understand and code, but are embedded in our default function `sort`
+
+```{r}
+result = NULL;
+# 10^c(1:3) only takes less than 30 seconds to run
+# 10^4 takes a long time 
+lengths = 10^c( seq(1,3.1415926535897932384626,by=0.1) );
+
+for(len in lengths)
+  {
+  len = round(len, 0);
+  print(len);
+  x = rnorm( len ); # generate data
+    d = sortMe.base(x,verbose=FALSE,timings=TRUE); # built-in default
+    i = sortMe.insertion(x,verbose=FALSE,timings=TRUE);
+    s = sortMe.selection(x,verbose=FALSE,timings=TRUE);
+    b = sortMe.bubble(x,verbose=FALSE,timings=TRUE);
+  row = c(len,d$time,i$time,s$time,b$time);
+  result = rbind(result,row);
+  }
+
+result = as.data.frame(result);
+colnames(result) = c("n","sort","insertion","selection","bubble");
+
+result;
+```
+
+```{r}
+
+xlim = range(result$n);
+ylim = range(result[,2:5]);
+
+for(j in 2:5)
+  {
+  if(j > 2) 
+    { 
+    par(new=TRUE); 
+    plot(result$n, result[,j], type="l", xlab="", ylab="", col=palette()[j], xlim=xlim, ylim=ylim, lwd=2, bty="n");
+    } else
+          {
+          plot(result$n, result[,j], type="l", xlab="numbers to sort", ylab="time in seconds", col=palette()[j], xlim=xlim, ylim=ylim, lwd=2, bty="n");
+          }
+  
+  }
+  legend("topleft", legend=names(result[,2:5]), col=palette()[2:5], bty="n", lwd=2);
+
+
+```
+
+Comment on the benchmark results.
+
+# Computation of Rank Data
+
+John Tukey devised five summary statistics:  min, max, median, Q1, and Q3.  All of these data require sorting the data, which is a nontrivial task (especially with paper-and-pencil).  But John Tukey was living at a time when computing power was making this task more plausible.  
+
+```{r}
+summary(xs);
+```
+
+NOTE:  The `mean` had to be included by those anchored to the past.
+
+
+### Manual computation of median and IQR
+
+If the data is sorted, it is easy to compute the Tukey values.
+
+Recall "median" by definition equates to the middle number in a sorted list of numbers.  If the list is even, there are two middle numbers.  
+
+Most resolve this by taking the average of those two numbers and call it the "median".  That is factually incorrect, because that average is not in the data set, it is "between" two numbers in the data set.  
+
+Algorithms to deal with this issue are not embedded in the original `median` function but are a `type` parameter in the `quantile` function.
+
+```{r}
+
+xs = sort( sample( c(2,3,5,7,11,13,17,19,23) ) );
+n = length(xs);
+
+idx.min = 1; # first element is the min
+  print(paste0( "idx.min: ",idx.min," --> min: ",xs[idx.min]));
+idx.max = n; # last element is the max
+  print(paste0( "idx.max: ",idx.max," --> max: ",xs[idx.max]));
+
+idx.median = n * 1/2;
+idx.Q1     = n * 1/4;
+idx.Q3     = n * 3/4;
+
+# if the "idx" doesn't land on an exact number, what should we do?
+
+# we could "average" using the mean, but the result is a number not in our dataset.  There are lot's of ways to choose these values.
+
+# most textbooks say "average" the middle two numbers; such a result is a number not actually in the dataset...
+
+# default in #7
+# I prefer #1
+for(i in 1:9)
+  {
+  print(paste0("type: ",i));
+  print( quantile(xs,probs=c(1/4,1/2,3/4),type=i) );
+  }
+
+
+Qs = as.numeric( quantile(xs, probs=c(1/4,1/2,3/4), type=1) );
+
+Q1=Qs[1];
+Q2=Qs[2];
+Q3=Qs[3];
+
+print(paste0("Q1: ", Q1 ));
+print(paste0("Q2 (median): ", Q2 ));
+print(paste0("Q3: ", Q3 ));
+
+IQR = Q3 = Q1;
+print(paste0("IQR (inter-quartile range): ", IQR ));
+
+
+##############################################
+mean(xs);
+sd(xs); # traditional "deviation" measure anchored to mean
+
+```
+
+### Data-driven functions 
+
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+
+library(devtools);  # need to get rid of this dependency ...
+source_url( paste0(  github.monte, "humanVerse/main/humanVerse/R/functions-vector.R" ) );
+source_url( paste0(  github.monte, "humanVerse/main/humanVerse/R/functions-str.R" ) );
+source_url( paste0(  github.monte, "humanVerse/main/humanVerse/R/functions-stats.R" ) );
+
+# https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-vector.R
+# https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-str.R
+# https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-stats.R
+
+```
+
+### Min/Max
+
+
+```{r}
+max(presidents[1:30]);
+max(presidents[1:30], na.rm=TRUE);
+
+# presidents is a built-in data set
+which.max( c(87, presidents[1:30], 87) );
+
+# my function
+whichMax( c(87, presidents[1:30], 87) );
+
+
+which( c(87, presidents[1:30], 87) == max(presidents[1:30], na.rm=TRUE) );
+
+```
+
+```{r}
+min(presidents[1:30]);
+min(presidents[1:30], na.rm=TRUE);
+
+# presidents is a built-in data set
+which.min( c(87, presidents[1:30], 87) );
+
+# my function
+whichMin( c(87, presidents[1:30], 87) );
+
+
+which( c(87, presidents[1:30], 87) == min(presidents[1:30], na.rm=TRUE) );
+```
+
+
+### Mode
+
+Which number occurs the most?
+
+"R does not have a standard in-built function to calculate mode."
+
+<https://www.tutorialspoint.com/r/r_mean_median_mode.htm>
+
+
+
+```{r}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+v <- c(2,1,2,3,1,2,3,4,1,5,5,3,2,3)
+
+getmode(v);
+```
+
+```{r}
+charv <- c("o","it","the","it","it")
+getmode(charv)
+```
+
+Doesn't deal with ties
+```{r}
+charv <- c("the", "o","it","the","it","it","the")
+getmode(charv)
+```
+
+```{r}
+# my function
+doMode( c(1, 1:9, 9) );
+doMode(charv)
+```
+
+My function doesn't deal with "strings", but I could fix that, if I felt it was appropriate.
+
+### Median
+
+Cut the data in half
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+median(xs); # built-in function
+doMedian(xs); # my function
+# pracma::primes(333);
+
+xs = c(2,3,5,7,11,13,17,19,23,29);
+median(xs);
+doMedian(xs); # my function
+```
+
+Primes play nice.  Will always have a whole-number "median"?  But look at "12", it is not part of the set, it is the average of two that tied to be in the middle.  A summary statistic is not part of the data.  My opinion:  BAD!
+
+### Mean
+
+Note:  you may have to do the `na.rm=TRUE` thing.
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+mean(xs); # built-in function
+doMean(xs); # my function ... computes "theoretical mean" and finds the closest number to it in the "actual data"
+# pracma::primes(333);
+
+xs = c(2,3,5,7,11,13,17,19,23,29);
+mean(xs);
+doMean(xs); # my function
+
+```
+
+
+TODO:  compute the mean and median of the "well locations" (longitude, latitude) ... using the built-in functions and my functions.
+
+```{r}
+# latitude.mean = ???
+# longitude.mean = ???
+# 
+# latitude.median = ???
+# longitude.median = ???
+```
+
+
+COMMENT on your findings.  How would you find the best answer to the "central tendency" of the 23 wells?
+

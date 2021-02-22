@@ -1,0 +1,324 @@
+---
+title: "bivariate statistics:  comparing [two things]"
+output: html_notebook
+---
+
+# Bivariate: simplest multivariate case
+
+## Normal and size 'n'
+```{r}
+x = rnorm( (n=10000), mean = 0, sd = 1);
+y = rnorm(n, mean = 10, sd = 2);
+plot(x,y, asp=1);
+```
+
+```{r}
+stem(x);
+hist(x);
+boxplot(x);
+summary(x);
+```
+
+```{r}
+boxplot(x,y);
+```
+
+
+```{r}
+# https://brand.wsu.edu/visual/colors/
+wsu.crimson = "#981e32";
+wsu.gray    = "#717171";
+
+boxplot(x,y, 
+          horizontal=TRUE, 
+          names=c("x","y"),
+          col=c(wsu.crimson,wsu.gray), # colors
+          frame=FALSE
+        );
+
+# why is "frame" not documented?
+# why not part of "par" (... already taken)
+# https://stackoverflow.com/questions/4946491/removing-the-frame-from-the-boxplot-function-in-r
+```
+
+Now, since I defined `n` the way I did, I could go back up to the top, change the value, and run again.  This is "better" than copying and pasting lots of code, but "worse" than trying to write a function that will do it.
+
+Try n=100, n=1000, n=10000 ... and comment
+
+-- WRITE SOMETHING HERE --
+As n increases, the histogram becomes more normal, the scatterplot is more clustered (to the point of being black), and there are more dots outside of the boxplot. 
+
+# Correlation, Causation, and Independence
+
+Informally, when we say two things "correlate" we mean there is some degree of dependence.  The Pearson correlation:
+
+## (Random) correlation
+```{r}
+# distributions = c();
+# distributions = NULL;
+nsim = 10000;
+distributions = numeric(nsim);
+for(i in 1:nsim)
+  {
+  # print(i);
+  x = rnorm( (n=100), mean = 0, sd = 1);
+  y = rnorm(n, mean = 10, sd = 2);
+  
+  myCorr = cor(x,y);
+  distributions = c(distributions, myCorr);
+  distributions[i] = myCorr;
+  }
+
+summary(distributions);
+
+#?cor
+cor(x,y);
+```
+
+Not exactly zero, but very close as the "random data" (x,y) were drawn from independent random-ness.  Sometimes negative, sometimes positive.  What does that mean?
+
+## (Fixed) correlation
+```{r}
+set.seed(62629); x = rnorm( (n=100), mean = 0, sd = 1);
+set.seed(62629); y = rnorm(n, mean = 10, sd = 2);
+#?cor
+cor(x,y);
+# get.seed ?
+```
+
+What happened?
+
+## (Functional) correlation
+```{r}
+x = rnorm( (n=100), mean = 0, sd = 1);
+y = 3*x + 5;
+#?cor
+cor(x,y);
+```
+Now what?
+
+## (Functional) correlation?
+```{r}
+x = rnorm( (n=100), mean = 0, sd = 1);
+y = 2*x^3 + 3*x + 5;
+#?cor
+cor(x,y);
+```
+
+How does "correlation" and "linearness" relate (or correlate)?  Why?  
+
+Linear algebra, linear combinations, this is all the foundation of most statistical procedures.
+
+<https://en.wikipedia.org/wiki/Pearson_correlation_coefficient>
+
+
+## More (Functional) correlation
+```{r, fig.width=5, fig.height=5}
+x = rnorm( (n=100), mean = 0, sd = 1);
+y = 3*x + 5;
+
+#  doLinearRegression(x,y, ...)
+
+#?cor
+cor(x,y);
+
+reg = lm(y~x); # ?lm
+summary(reg);
+# str(summary(reg));
+
+( reg.r2 = r2 = summary(reg)$r.squared );
+( r2.adj = summary(reg)$adj.r.squared );
+# names(summary(reg));
+( reg.fit.df = summary(reg)$df );
+( reg.fit.fstatistic = summary(reg)$fstatistic );
+( reg.fit.model.p = as.numeric( pf(reg.fit.fstatistic[1], reg.fit.fstatistic[2], reg.fit.fstatistic[3]) ) );
+( reg.coef = summary(reg)$coefficients[,1] );
+( reg.coef.se = summary(reg)$coefficients[,2] );
+( reg.coef.tvalue = summary(reg)$coefficients[,3] );
+( reg.coef.tvalue.prob = summary(reg)$coefficients[,4] );
+
+# https://astrostatistics.psu.edu/su07/R/html/grDevices/html/plotmath.html
+# https://lukemiller.org/index.php/2012/10/adding-p-values-and-r-squared-values-to-a-plot-using-expression/
+
+
+myMain = paste0(
+    "y = ", round(reg.coef[2], 3), "x + ", round(reg.coef[1], 3), "\n", 
+    "F(",round(reg.fit.fstatistic[2],3), ",", round(reg.fit.fstatistic[3],3),") = ", round(reg.fit.fstatistic[1],3), ", p = ", round(reg.fit.model.p,3), "\n",
+    "R^2 = ", round(reg.r2,3));
+
+  myMin = min(x,y) - 5;
+  myMax = max(x,y) + 5;
+plot(x,y, 
+  asp=1, pty="s",
+  main = myMain, col.main = "blue",
+  xlim=c(myMin,myMax),
+  ylim=c(myMin,myMax),
+  type="p", pch=18, cex=1.75, 
+  col=wsu.gray);
+abline(a=0,b=1, col="black");
+abline(reg, lwd=3, col=wsu.crimson);
+
+
+
+
+
+
+print("R^2, square root:");
+sqrt(r2);
+
+print("Correlation:");
+cor(x,y);
+# RStudio has hijacked the "viewing" window ... wants you to use ggplot2 or change the parameters above
+```
+
+## More (Functional) correlation?
+```{r, fig.width=5, fig.height=5}
+x = rnorm( (n=100), mean = 0, sd = 1);
+y = 2*x^3 + 3*x + 5;
+#?cor
+cor(x,y);
+reg = lm(y~x); # ?lm
+summary(reg);
+# str(summary(reg));
+
+( reg.r2 = r2 = summary(reg)$r.squared );
+( r2.adj = summary(reg)$adj.r.squared );
+# names(summary(reg));
+( reg.fit.df = summary(reg)$df );
+( reg.fit.fstatistic = summary(reg)$fstatistic );
+( reg.fit.model.p = as.numeric( pf(reg.fit.fstatistic[1], reg.fit.fstatistic[2], reg.fit.fstatistic[3]) ) );
+( reg.coef = summary(reg)$coefficients[,1] );
+( reg.coef.se = summary(reg)$coefficients[,2] );
+( reg.coef.tvalue = summary(reg)$coefficients[,3] );
+( reg.coef.tvalue.prob = summary(reg)$coefficients[,4] );
+
+# https://astrostatistics.psu.edu/su07/R/html/grDevices/html/plotmath.html
+# https://lukemiller.org/index.php/2012/10/adding-p-values-and-r-squared-values-to-a-plot-using-expression/
+
+
+myMain = paste0(
+    "y = ", round(reg.coef[2], 3), "x + ", round(reg.coef[1], 3), "\n", 
+    "F(",round(reg.fit.fstatistic[2],3), ",", round(reg.fit.fstatistic[3],3),") = ", round(reg.fit.fstatistic[1],3), ", p = ", round(reg.fit.model.p,3), "\n",
+    "R^2 = ", round(reg.r2,3));
+
+  myMin = min(x,y) - 5;
+  myMax = max(x,y) + 5;
+plot(x,y, 
+  asp=1, pty="s",
+  main = myMain, col.main = "blue",
+  xlim=c(myMin,myMax),
+  ylim=c(myMin,myMax),
+  type="p", pch=18, cex=1.75, 
+  col=wsu.gray);
+abline(a=0,b=1, col="black");
+abline(reg, lwd=3, col=wsu.crimson);
+
+
+
+
+print("R^2, square root:");
+sqrt(r2);
+
+print("Correlation:");
+cor(x,y);
+# Chunk is too long, sign that I need a function 
+```
+
+
+# Statistically testing two "things"
+
+Google search (images): "when to use t test vs z test"
+
+One-variable t-test, comparing your data to a known "truth".  pH=7 
+
+## t-test (bivariate)
+```{r}
+# https://statistics.berkeley.edu/computing/r-t-tests
+x = rnorm( (n=100), mean = 0, sd = 1);
+y = rnorm(n, mean = 10, sd = 2);
+t.test(x,y);
+```
+
+What is "Welch's" ? Why is it used?
+
+## t-test (univariate to known value) [n=7]
+```{r}
+x = -3:3;
+length(x);
+hist(x, breaks=12, xlim=c(-3,3));
+boxplot(x);
+t.test(x, mu = 0, alternative="two.sided");
+```
+
+## t-test (univariate to known value) [n=7 * 100]
+```{r}
+x = -3:3;
+x = rep(x, 100);
+length(x);
+hist(x, breaks=12, xlim=c(-3,3));
+boxplot(x);
+t.test(x, mu = 0, alternative="two.sided");
+```
+
+## t-test (univariate to known value) [n = 100]
+```{r}
+set.seed(314159); x = rnorm( (n=100), mean = 0, sd = 1);
+length(x);
+hist(x, breaks=12, xlim=c(-3,3));
+boxplot(x);
+t.test(x, mu = 0, alternative="two.sided");
+```
+
+
+## t-test (univariate to known value) [n = 100 * 7]
+```{r}
+set.seed(314159); x = rnorm( (n=100), mean = 0, sd = 1);
+x = rep(x, 7);
+length(x);
+hist(x, breaks=12, xlim=c(-3,3));
+boxplot(x);
+t.test(x, mu = 0, alternative="two.sided");
+```
+
+## t-test (univariate to known value) [n = 100 * 100]
+```{r}
+set.seed(314159); x = rnorm( (n=100), mean = 0, sd = 1);
+x = rep(x, 100);
+length(x);
+hist(x, breaks=12, xlim=c(-3,3));
+boxplot(x);
+t.test(x, mu = 0, alternative="two.sided");
+```
+
+We are using the same data, repeating it.  Comment on what "n" is doing to a t-test.
+
+
+```{r}
+set.seed(31415926); y = rnorm(n, mean = 10, sd = 2);
+mean(y);
+t.test(y, mu = 0, alternative="two.sided");
+```
+
+```{r}
+set.seed(31415926); y = rnorm(n, mean = 10, sd = 2);
+mean(y);
+t.test(y, mu = 10, alternative="two.sided");
+```
+
+
+
+## z-test
+
+The general rule of thumb for "when" we have sufficient data to use a normal-test (normal curve) and not a t-test is when "n > 30" ... Student t "I like beer" ... 
+
+<https://bloomingtontutors.com/blog/when-to-use-the-z-test-versus-t-test>
+
+```{r}
+# ?z-test or ?z.test
+```
+So why don't we have a built-in "z test" like we do with the t-test?
+We will talk about "scaling" and "normalization" in the near future.  For now, play around with the test options.
+
+
+
+

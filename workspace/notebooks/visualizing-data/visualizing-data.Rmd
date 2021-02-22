@@ -1,0 +1,386 @@
+---
+title: 'R Notebook: visualizing data'
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# git add .
+# git status
+# git commit -m "first commit"
+# git push -u origin HEAD:main
+```
+
+# Visualization
+
+The "holy grail" in data analytics is to create "one graphic" that tells a complete story.
+
+- Tied to the research question
+- Informative but not busy
+- Follows correct data-provenance protocols
+- Follows correct data-presentation protocols
+
+## Example : Circular COVID
+
+<https://www.cebm.net/covid-19/covid-19-florence-nightingales-daigrams-for-deaths/>
+
+SUMMARY
+
+- Circular visualization allows year-alignment
+- Scale is not distorted, every "radius" unit is 5000
+- Summarizes deaths per week in a country to visually see the COVID effect
+- Pays homage to Florence Nightingale
+
+CONS
+
+- We generally think about a Month (not a week) when we review data.  The peak (week 16 or 17) has to be looked up elsewhere (April 22-ish), therefore, BAD form:  <https://www.epochconverter.com/weeks/2020>
+- The above could have Month on the outer circle in "bold" and the `#WW` inside the outer loop.
+
+RECOMMENDATIONS
+
+- A "smoothing" may make sense (rolling 4-week average).  Are the spikes in summer and around New Year a function of "actual deaths" or are they residuals of the data-collection process (e.g., everyone is on holiday, so the data is not collected until they get back)?
+- A "cumulative sum" approach may further remove any "accounting conspiracy theories" (e.g., they under-reported deaths in the weeks before to magnify the spike).  The scale would be cool as an Archimedes spiral (e.g., starting at 10,000 in January, and being at about 150,000 by December)
+
+## Example : Job Demand
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+We are going to use exploratory techniques to examine some Indeed.com data.  This `job` data examines how many jobs reference a certain keyword.  Every Monday morning at 12:00:00AM EST (using a scheduler `crontab`), this data collection is performed.  A few weeks ago, I added some new keys words.  The data set we have consists of 5 weeks:  `2020-38` to `2020-42`.
+
+- For each "search phrase", I go to Indeed.com and download the first page of results.  
+- From this first page, I grab the "total count"
+- An example is shown in a screenshot. 
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Big-data.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### Include Functions
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+include.me = paste0(github.monte, "humanVerseWSU/master/misc/functions-midterm-F2000.R");  # # should be 2020 ... oh well ...
+include.me;
+
+#library(devtools);
+#source_url(include.me);
+source(include.me);
+
+
+readFromPipe = function(file, header=TRUE, quote="", sep="|")
+  {
+  utils::read.csv(file, header=header, quote=quote, sep=sep);
+  }
+
+```
+
+### Load Data
+```{r}
+path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+jobfile = paste0(path.mshaffer, "_data_/indeed-jobs.txt");
+
+jobs = readFromPipe(jobfile);
+colnames(jobs) = c("year.week", "search.query", "job.count");
+jobs;
+```
+
+### Basic Plots
+```{r}
+hist(jobs$job.count);
+boxplot(jobs$job.count, horizontal=TRUE);
+
+summary(jobs$job.count);
+```
+
+-- INTERPRET --
+
+### Include Functions (More)
+```{r}
+# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-dataframe.R
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-dataframe.R");  
+#library(devtools);
+#source_url(include.me);
+source(include.me); # subsetDataFrame
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-str.R");  
+source(include.me); # trimMe
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-vector.R");  
+source(include.me); # findAllIndexesWithValueInVector
+
+```
+
+### Deep-Dive Subset
+```{r}
+deep.dive = c("Microsoft Office", "C++", "SQL", "Computer Science", "Python", "Java", "Statistics", "Data analysis", "Data analytics", "Javascript", "machine learning", "Git", "Tableau", "Business intelligence", "PHP", "Mysql", "MariaDB", "SAS", "SPSS", "Stata",  "Data entry", "Big data", "R", "Data science", "Power BI");
+
+# "R" to include or not
+
+jobs.subset = subsetDataFrame(jobs, "search.query", "==", deep.dive, logic="OR", verbose=TRUE);
+```
+
+### (Subset) Basic Plots
+```{r}
+hist(jobs.subset$job.count);
+boxplot(jobs.subset$job.count, horizontal=TRUE);
+
+summary(jobs.subset$job.count);
+```
+
+-- INTERPRET --
+
+### (Subset) Separate Year-Week
+```{r}
+jobs.subset$year = jobs.subset$week = NA;
+
+tmp = strsplit(jobs.subset$year.week, "-", fixed=TRUE);
+for(i in 1:length(tmp))
+  {
+  row = as.numeric(tmp[[i]]);
+  jobs.subset$year[i] = row[1];
+  jobs.subset$week[i] = row[2];
+  }
+
+str(jobs.subset);
+jobs.subset;
+```
+
+### (Subset) Build Jobs in 1000s
+```{r}
+# function requires this format ... update?
+# jobs.subset$year.week = as.numeric( gsub("-",".",jobs.subset$year.week, fixed=TRUE) );
+jobs.subset$year.week = jobs.subset$week;
+
+
+jobs.subset = sortDataFrameByNumericColumns(jobs.subset, c("year.week","job.count"), c("ASC","DESC") );
+
+jobs.subset$job.count.k = jobs.subset$job.count / 1000; # easier to think about "1000s" of jobs ... 
+```
+
+### (Subset) Plot Jobs
+
+```{r}
+do.nothing = plotJobs(jobs.subset);
+```
+
+### (Subset) Plot Jobs with Range [0,42]
+```{r}
+do.nothing = plotJobs(jobs.subset, myy.lim = c(0,42) );
+```
+
+### (Subset) Plot Jobs with Range [0,20]
+```{r}
+do.nothing = plotJobs(jobs.subset, myy.lim = c(0,20) );
+```
+
+Clearly we have some missing data.  (The mathematics of "continuity").
+
+
+**Git-40/Git-41 data history, notice the date-time and file sizes ...** 
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Git-40.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Git-41.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+### (Subset) "Imputate" missing data
+```{r}
+
+idxs.week.40 = which(jobs.subset$week == 40);
+idxs.Git     = which(jobs.subset$search.query == "Git");
+
+# set notation
+my.idx = intersect(idxs.Git,idxs.week.40);
+
+jobs.subset[idxs.Git,];
+jobs.subset[my.idx,];
+
+
+myNewValue = mean( jobs.subset[ idxs.Git[-c(which(idxs.Git == my.idx))]    ,]$job.count, na.rm=TRUE);
+myNewValue;   # mean vs doMean
+              # interpolation of sorts
+
+#########################
+# serious interpolation
+library(PolynomF);
+interpolatePolynomial = function(x, xs, ys)
+  {
+  polynomial = as.function( poly_calc(xs, ys) );
+  y = polynomial(x);
+  y;
+  }
+
+xs = 38:42;
+ys = jobs.subset[idxs.Git,]$job.count;
+# the 3rd element is missing
+
+myNewValue2 = interpolatePolynomial(40, xs[-c(3)], ys[-c(3)]);
+myNewValue2;
+#########################
+
+whichValue = myNewValue2;  # myNewValue;  # you CHOOSE
+#####
+
+
+## change this if you feel appropriate?  To what number? 
+jobs.subset[my.idx,]$job.count = round(whichValue);         # job.count
+jobs.subset[my.idx,]$job.count.k = whichValue/1000;    # job.count.k (in thousands) ...
+
+jobs.subset[idxs.Git,];
+
+# CNTRL-SHIFT ENTER RUNS THE CURRENTLY HIGHLIGHTED CHUNK
+```
+
+
+### (Subset) Plot Jobs with Range [0,20]
+```{r}
+do.nothing = plotJobs(jobs.subset, myy.lim = c(0,20) );
+```
+
+### (Subset) Comparing "Data science", "Big data"
+```{r}
+do.nothing = plotJobs(jobs.subset, myy.lim = c(14,17) );
+
+boxplotJobQueryComparison(jobs.subset, "Data science", "Big data");
+
+t.test.jobs(jobs.subset, "Data science", "Big data");
+  
+```
+
+### CONCLUSION on Visualization Tools in this Section
+
+SUMMARY
+
+CONS
+
+RECOMMENDATIONS
+
+## Example : Cities (U.S. Capitals)
+
+```{r}
+
+path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+cityfile = paste0(path.mshaffer, "_data_/state-capitals/final/state-capitals.txt");
+
+capitals = readFromPipe(cityfile);
+
+colnames(capitals) = c("state", "capital", "latitude", "longitude", "capital.since", "area.sq.miles", "population.2019.est", "population.2019.est.MSA", "population.2019.est.CSA", "city.rank.in.state", "url");
+
+capitals$st = c("AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"); # ,"DC","AS","GU","MP","PR","UM","VI");
+
+myLabels = paste0(capitals$capital, ", ", capitals$st);
+
+capitals;
+```
+
+### USMAP with (ARGH!) ggplot2
+```{r}
+latlong = removeAllColumnsBut(capitals,c( "state", "st", "capital", "latitude", "longitude", "population.2019.est") );
+
+# first two elements have to be this
+latlong = moveColumnsInDataFrame(latlong, c("longitude","latitude"), "before", "state");
+
+# for transform to work
+library(usmap);    
+latlong.transform = usmap_transform(latlong);
+library(ggplot2);
+
+### plot_usmap ...  
+plot_usmap(fill = "#53565A", alpha = 0.25) +
+  ggrepel::geom_label_repel(data = latlong.transform,
+             aes(x = longitude.1, y = latitude.1, label = capital),
+             size = 3, alpha = 0.8,
+             label.r = unit(0.5, "lines"), label.size = 0.5,
+             segment.color = "#981E32", segment.size = 1,
+             seed = 1002) +
+  scale_size_continuous(range = c(1, 16),
+                        label = scales::comma) +
+  labs(title = "U.S. State Capitals",
+       subtitle = "Source: Wikipedia (October 2020)") +
+  theme(legend.position = "right")
+```
+
+### Voroni
+```{r}
+colors = rainbow(50, s = 0.6, v = 0.75);
+
+## initial visualization ...
+library(tripack);
+# plot( voronoi.mosaic(latlong[,4:3], duplicate="remove"), col=colors, xlab="");
+plot( voronoi.mosaic(x = latlong$longitude, y = latlong$latitude), col=colors, xlab="");
+text(x = latlong$longitude, y = latlong$latitude, labels = latlong$capital, col=colors, cex=0.5);
+```
+
+### Maps (Base)
+
+```{r}
+### how is any of the other visualizations really any better than a simple map ... with actual locations for Alaska/Hawaii?
+library(maps); 
+map('state', plot = TRUE, fill = FALSE, 
+    col = "blue", myborder = 0.5
+    );
+points(x = latlong$longitude, y = latlong$latitude, 
+                  col = "red", pch = "*", cex = 1);
+
+```
+
+
+
+SUMMARY
+
+CONS
+
+RECOMMENDATIONS
+
+
+
+
+## Example : Climate (U.S. Capitals)
+
+
+```{r}
+path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+climatefile = paste0(path.mshaffer, "_data_/state-capitals/final/state-capitals-climatedata.txt");
+
+climate = readFromPipe(climatefile);
+```
+
+### Helena, Montana
+```{r}
+plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Helena");
+
+# TODO: update from "old-school" to ImageMagick to load images ...
+```
+
+### Baton Rouge, Louisiana
+```{r}
+plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Baton Rouge");
+```
+
+### Olympia, Washington
+```{r}
+plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Olympia");
+```
+
+### (Compare) Helena, Montana to Baton Rouge, Louisiana
+```{r}
+compareTwoCitiesClimates(climate, city.key="capital", city.1="Helena", city.2="Baton Rouge");
+```
+
+
+SUMMARY
+
+CONS
+
+RECOMMENDATIONS
+
+
+
+# O-well
+
+How are you going to "describe" your data?  Several visualizations and summaries are appropriate, but the quest for "one-graphic" is primary.  You will have several o-well assignments, and will utilize that and other data on the midterm.  So put in your hours now, so you can deliver a quality midterm.
+
+
