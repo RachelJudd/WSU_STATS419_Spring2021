@@ -1,5 +1,5 @@
 ---
-title: 'R Notebook: o-well 1'
+title: 'R Notebook: o-well 2'
 author: "Rachel Judd [rachel.judd]"
 output:
   html_document:
@@ -7,7 +7,7 @@ output:
 ---
 # Setting up Remote Access
 ```{r}
-which.github = "local";  # local ... remote 
+which.github = "remote";  # local ... remote 
 
 github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
 github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
@@ -298,7 +298,7 @@ v = c("sand,granite","sand,granite,alkaline","alkaline,conglomerate","alkaline",
 getmode(v);
 ```
 
-
+# Correlations
 ```{r}
 cor(saudi[["Altitude"]],saudi[["pH"]]);
 
@@ -310,7 +310,12 @@ cor(saudi[["Fault"]],saudi[["pH"]])
 ```{r}
 cor(saudi[["Altitude"]],saudi[["Zn"]])
 ```
-```{r}
 
+```{r}
+cor(saudi[["Latitude"]],saudi[["pH"]])
+```
+
+```{r}
+cor(saudi[["Longitude"]],saudi[["pH"]])
 ```
 

@@ -1,0 +1,486 @@
+---
+title: 'normal-2:  is being average good?'
+output:
+  html_document:
+    df_print: paged
+---
+
+# Setup
+### Include Stuff
+```{r}
+# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-dataframe.R
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-dataframe.R");  
+#library(devtools);
+#source_url(include.me);
+source(include.me); # subsetDataFrame
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-str.R");  
+source(include.me); # trimMe
+
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-vector.R");  
+source(include.me); # findAllIndexesWithValueInVector
+
+
+include.me = paste0(github.monte, "humanVerse/main/misc/functions-integrate2.R");  
+source(include.me); # parseNumericalFunctionString
+
+
+# https://brand.wsu.edu/visual/colors/
+wsu.crimson = "#981e32";
+wsu.gray    = "#717171";
+```
+
+### Update Numerical Integration
+Notice `functions-integrate2.R`, last session I recognized there was a bug in my "Trapezoid Integration Method" for "string" (not "support") in my function.  To eliminate the ambiguity, I created a string-specific function.  `parseNumericalFunctionString` and `computeNumericalIntegrationString`
+
+#### Test (1)
+```{r}
+fstr = "f(x): 2 * x + 3       >     x.domain = c(-5,5);  ";
+finfo = computeNumericalIntegrationString(fstr, start=-4, stop=4, showPolygons = TRUE, verbose=TRUE);
+
+names(finfo);
+str(finfo$result);
+cat("\n", "===============", "\n\n");
+finfo$result$total;
+```
+#### Test (2)
+```{r}
+fstr = "f(x): 2 * x + 3       >     x.domain = c(-5,5);  ";
+finfo = computeNumericalIntegrationString(fstr, start=-4, stop=4, showPolygons = TRUE, verbose=TRUE, dxi=0.1);
+cat("\n", "===============", "\n\n");
+finfo$result$total;
+```
+
+
+# Normal Introduction
+
+This is the normal curve, the bell curve, or the "Gauss"ian curve.  Notice by definition, the area is one.  So we can use it to represent probabilities.
+
+It goes from [-Inf, Inf] 
+
+## Normal [-5,5]
+```{r}
+fstr = "Normal: -5 , 5 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+## Normal [-4,4]
+```{r}
+fstr = "Normal: -4 , 4  ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+## Normal [-3,3]
+```{r}
+fstr = "Normal: -3 , 3 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+## Normal [-2,2]
+```{r}
+fstr = "Normal: -2 , 2 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+
+## Normal [-1,1]
+```{r}
+fstr = "Normal: -1 , 1 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+## Normal [-1,1] (larger domain)
+```{r}
+fstr = "Normal: -1 , 1     >     x.domain = c(-5,5);   ";  # notice it overrides the value to the left ...
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+## Normal [-1,1] CORRECT (larger domain)
+```{r}
+fstr = "Normal: -1 , 1     >     x.domain = c(-4,4);   ";  # notice it overrides the value to the left ... 
+finfo = computeNumericalIntegrationString(fstr, start=-1, stop=1, verbose=FALSE);
+
+cat("\n", "MAXIMUM: ", max(finfo$result$info$y), "\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+```
+
+
+[ Could you write a for-loop that showed the changing total area from -10,10 to -1,1 ???]
+
+## pnorm
+We call the values along the "x-axis" the "z-scores" in the Normal distribution.
+### z = 0
+```{r}
+z = 0;
+
+fstr = "Normal: -4 , 4 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE, stop=z);
+
+cat("\n", "===============", "\n\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+cat("\n", "pnorm(", z, "): ", pnorm(z), "\n");
+```
+### z = 1
+```{r}
+z = 1;
+
+fstr = "Normal: -4 , 4 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE, stop=z);
+
+cat("\n", "===============", "\n\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+cat("\n", "pnorm(", z, "): ", pnorm(z), "\n");
+```
+### z = -1
+```{r}
+z = -1;
+
+fstr = "Normal: -4 , 4 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE, stop=z);
+
+cat("\n", "===============", "\n\n");
+cat("\n", "AREA: ", finfo$result$total, "\n");
+cat("\n", "pnorm(", z, "): ", pnorm(z), "\n");
+```
+## qnorm
+We have talked about taking an inverse of a function.  The inverse of `pnorm` is `qnorm` (and vice versa).
+
+```{r}
+z = 2;
+
+(z.pnorm = pnorm(z));
+cat("\n", "===============", "\n\n");
+(qnorm.z.pnorm = qnorm(z.pnorm));
+cat("\n", "===============", "\n\n");
+qnorm(pnorm(z));
+```
+
+
+# Standardizing Data
+
+So how to we utilize the properties of the normal curve?  We have to have `z` scores.
+
+Standardizing data is often called `scale` or `normalizing` or `norming` data.
+
+## x as primes
+```{r}
+library(pracma);
+( x = pracma::primes(135) );
+cat("\n", "===============", "\n\n");
+( nx = length(x) );
+```
+## Include more stuff
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-standardize.R"); 
+source(include.me);
+```
+
+### (min) Standardize
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+standardizeToMin(x);
+```
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+standardizeToMin(x, myMin=1/3);  # if the "true min" is not found in the data ...
+```
+
+### (max) Standardize
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+standardizeToMax(x);
+cat("\n", "===============", "\n\n");
+100 * standardizeToMax(x);
+```
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+standardizeToMax(x, myMax=1000);  # if the "true max" is not found in the data ...
+```
+
+### (factor) Standardize
+
+```{r}
+x; 
+cat("\n", "===============", "\n\n");
+standardizeToFactor(x, factor=1000);
+```
+
+### (length) Standardize
+
+```{r}
+standardizeToN(x); # maybe should be standarizeToLength(x) ... add as "alias"
+# standardizeToFactor(x, factor=nx);
+```
+
+### (sum) Standardize [norm 1]
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+x.sum = standardizeToSum(x); 
+x.sum;
+cat("\n", "===============", "\n\n");
+sum(x.sum);  # these values sum to one 
+```
+
+
+### (range) Standardize
+
+```{r}
+x;
+cat("\n", "===============", "\n\n");
+  oldrange = range(x);  newrange = c(1,100);
+standardizeFromOldRangeToNew(x, oldrange, newrange);  
+```
+
+
+## Include more stuff
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-stats.R"); 
+source(include.me);
+
+# includeGithubFolder ... 
+```
+
+
+### (scale) Standardize
+
+```{r}
+  mean(x);
+cat("\n", "===============", "\n\n");
+  doMean(x);
+cat("\n", "===============", "\n\n");
+  sd(x);
+cat("\n", "===============", "\n\n");
+  scale(x);
+cat("\n", "===============", "\n\n");
+  as.numeric( scale(x) );
+```
+
+#### Include more stuff
+```{r}
+github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-get-set.R"); 
+source(include.me);
+```
+
+#### getAttribute
+```{r}
+x.scale = scale(x);
+  getAttribute("scaled:center", x.scale); # mean
+  getAttribute("scaled:scale", x.scale); # sd
+```
+
+### (calculateZscores) Standardize
+```{r}
+  as.numeric( scale(x) );
+cat("\n", "===============", "\n\n");
+  calculateZscores(x);
+```
+
+### (calculateZscores) Standardize [true values]
+```{r}
+  calculateZscores(x, x.bar=3, s.hat=1);  # we assume we have a known "true value" for the estimates x.bar and s.hat 
+```
+
+[ What is the basic formula to convert `x` to `z` scores? ]
+
+
+### (quantiles) Standardize 
+
+`scale` is tied to the mean.  You can similarly standardize data based on its rank order using elements like the median.
+
+#### (median split) data
+
+```{r}
+x.cut = cutMe( x, c(1/2) );
+table(x.cut$member);
+x.cut;
+```
+
+#### (trecile split) data
+
+```{r}
+x.cut = cutMe( x, c(1/3, 2/3) );
+table(x.cut$member);
+x.cut;
+```
+
+#### (quartile split) data
+
+```{r}
+x.cut = cutMe( x, c(1/4, 2/4, 3/4) );
+table(x.cut$member);
+x.cut;
+```
+#### (quintile split) data
+
+```{r}
+x.cut = cutMe( x, (1:4)/5 );
+table(x.cut$member);
+x.cut;
+```
+
+
+#### (eight? split) data
+
+```{r}
+x.cut = cutMe( x, (1:7)/8 );
+table(x.cut$member);
+x.cut;
+```
+
+
+#### (decile split) data
+
+```{r}
+x.cut = cutMe( x, (1:9)/10 );
+table(x.cut$member);
+x.cut;
+```
+
+#### (centile split) data
+
+This is sometimes called "percentile" or "%ile"
+
+```{r}
+ncuts = 100;
+x.cut = cutMe( x, (1:(ncuts-1))/ncuts );
+table(x.cut$member);
+x.cut;  # not enough data
+```
+
+### (z split) data [primes]
+
+We know that z goes from about [-3,3], let's break it up into 1/2 steps and build a summary table.
+
+```{r}
+source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R");
+source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-stats.R");
+
+
+z = calculateZscores(x);
+  range.z = c(-3,3);
+  steps.z = 1/2;
+z.cut = cutZ(z, range.z, steps.z, verbose=TRUE);
+table(z.cut$member);
+z.cut;
+```
+
+#### plot (z split) data
+
+```{r}
+yRange = c(0,0.4);
+
+fstr = "Normal: -4 , 4 ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE, ylim=yRange);
+
+steps.z = 1/1;
+z.cut = cutZ(z, range.z, steps.z, verbose=FALSE);
+z.table = table(z.cut$member);
+zCutOverlay(z.table, steps.z, ylim=yRange);
+
+```
+
+#### Is this normal?
+
+```{r}
+## normality
+( isNormal = stats::shapiro.test(x) );
+str(isNormal);
+```
+
+
+
+
+### (z split) data [rnorm]
+
+We know that z goes from about [-3,3], let's break it up into 1/2 steps and build a summary table.
+
+
+#### x as rnorm(100)
+```{r}
+# source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R");
+# source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-stats.R");
+
+# set.seed(12222015);
+set.seed(02232021);  # what would this accomplish ?
+x = rnorm(100);
+z = calculateZscores(x);
+plot(x,z);
+cor(x,z);
+cat("\n", "===============", "\n\n");
+# x == z;
+```
+
+[ COMMENT on the relationship between `x` and `z` for `rnorm` data. Why are they not exactly equal? ]
+
+```{r}
+  range.z = c(-3,3);
+  steps.z = 1/4;
+z.cut = cutZ(z, range.z, steps.z, verbose=TRUE);
+table(z.cut$member);
+z.cut;
+```
+
+#### plot (z split) data
+
+```{r}
+yRange = c(0,0.4);
+
+fstr = "Normal: -4 , 4  >  xlab=''; ylab=''; ";
+finfo = computeNumericalIntegrationString(fstr, verbose=FALSE, ylim=yRange, polygon.col.pos = wsu.crimson);
+
+steps.z = 1/6;
+z.cut = cutZ(z, range.z, steps.z, verbose=FALSE);
+z.table = table(z.cut$member);
+zCutOverlay(z.table, steps.z, ylim=yRange, myColor= paste0(wsu.gray,"CC"));
+
+```
+[ Does changing `steps.z` alter our perceptions of normality? ]
+
+
+#### Is this normal?
+
+```{r}
+## normality
+( isNormal = stats::shapiro.test(x) );  # this goes to 5000 only ?
+str(isNormal);
+```
+
+
+```{r}
+list("0.10" = isTRUE(isNormal$p.value > 0.10), "0.05" = isTRUE(isNormal$p.value > 0.05), "0.01" = isTRUE(isNormal$p.value > 0.01) );
+```
+
+[ Change `rnorm` to 1000 and notice any changes. How does this result help you answer the question for the `primes` data? ]
