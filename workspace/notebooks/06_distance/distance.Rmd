@@ -1,0 +1,262 @@
+---
+title: 'R Notebook sandbox: Playing with Distance'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+# Distance
+Distance is a primary formula to take "differences" between multivariate data.  To introduce distance, let's start with our understanding of "physical distance" which we eventually can apply to "distance between multivariate data".
+
+![**Source: https://i.stack.imgur.com/Vrq80.png**](http://md5.mshaffer.com/WSU_STATS419/_images_/Vrq80.png)
+
+*vs* pure HTML:
+
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Vrq80.png" style="border: 2px black solid;" />
+<div>**Source: https://i.stack.imgur.com/Vrq80.png**</div>
+
+- note: It seems currently, you can't nest a IMG inside a div, the renderer (Knitter) breaks.
+- note: It seems you can't nest bold and italics, and where is the 'underline'?
+
+***
+
+To compare two or more things, the concept of distance is essential.  So let's make certain we understand what it's all about.
+
+![Source: https://en.wikipedia.org/wiki/Distance](http://md5.mshaffer.com/WSU_STATS419/_images_/2020-09-17_21-04-17.png)
+
+## Manhattan Distance
+This metric assume you are constrainted to a grid of city streets or blocks.  You can't walk on the diagonal (the adage: **shortest distance** between two points, ...) because a large building is in the way.
+
+## Euclidean Distance
+This metric is based on the Pythagorean Theorem and attributed to Euclid.  Some evidence suggests that the Babylonians and Chinese had this knowledge much earlier.  Regardless, this is the 2-D "Flatland" variation of distance and can be applied to an n-D space.
+
+## Mahalanobis Distance
+This distance can be used to account for the density of the points to offset the Euclidean distance.  It is like "adding gravity to the equation".  If several points are clustered together, their interdependence can be considered when computing distance.
+
+See: \url{https://analyticsindiamag.com/understanding-mahalanobis-distance-and-its-use-cases/}
+
+## Crow-flies Distances
+We live on a spherical ellipsoid, so Euclidean Geometry is a bit limited.  The earth bulges at the equator as it spins, so there are several formulas to calculate distances.  An airplane flying from New York to Paris flies close to the North Pole to save distance on a Spherical Ellipsoid.
+
+Note:  The WIKIPEDIA screenshot above explains that shortest time-distance may not be shortest distance due to prevailing winds.
+
+
+# Chicago
+So let's start in the city of Chicago:
+
+```{r}
+chicago.willis.latlong = c(41.8791064,-87.6353986);
+chicago.cloud.gate.latlong = c(41.8826213,-87.6234554);
+chicago.lincoln.zoo.latlong = c(41.9217771,-87.6355701);
+chicago.marriott.latlong = c(41.8920961,-87.6244929);
+chicago.searle.latlong = c(41.8966098,-87.6175966);
+
+chicago = as.data.frame( matrix( c(  chicago.willis.latlong,
+                        chicago.cloud.gate.latlong,
+                        chicago.lincoln.zoo.latlong,
+                        chicago.marriott.latlong,
+                        chicago.searle.latlong
+                      )
+                    ,ncol=2,byrow=TRUE) );
+  rownames(chicago) = c("Willis Tower", "Cloud Gate", "Lincoln Zoo", "Marriott", "Searle NW");
+  colnames(chicago) = c("latitude","longitude");
+
+chicago;
+```
+## Distances
+Here are some distances for Chicago.  Are they correct units?
+```{r}
+dist(chicago, method="manhattan", diag=FALSE, upper=TRUE);
+```
+
+Distance using latitude/longitude can be converted to "miles" by using some constant factors.  Technically, the longitude factor is a function of latitude.
+```{r}
+# what does latitude, longitude mean?  
+# If the earth were a perfect sphere with radius 4000 miles,
+#  what would the factors be for latitude, longitude?
+
+# how many miles is 1 degree of latitude %1.15 miles with normal radius, 69.8 mi with 4000 mi radius (using radians).. 
+latitude.factor = 69.02;  # rough mile estimate  # 68.703 ?
+
+chicago$x.lat = chicago$latitude*latitude.factor;
+
+# how many miles is 1 degree of longitude
+longitude.factor = 51.48;  # rough mile estimate  
+
+chicago$y.long = chicago$longitude*longitude.factor;
+
+chicago;
+```
+
+
+### Manhattan distance
+```{r}
+round( dist(chicago[,3:4], method="manhattan", diag=FALSE, upper=TRUE), 3);
+```
+Google maps says the distance between "Willis Tower" and "Cloud Gate" is 0.9 miles; we seem to have reasonably good distance measures.
+
+### Euclidean distance
+Now that I have the "updated" measurements in "miles" (columns 3:4), I will perform a few variations.  First is Euclidean:
+```{r}
+# Other distances
+dist(chicago[,3:4], method="euclidean", diag=FALSE, upper=TRUE);
+```
+
+### Maximum distance
+```{r}
+dist(chicago[,3:4], method="maximum", diag=FALSE, upper=TRUE);
+```
+
+### Minkowski distance
+```{r}
+dist(chicago[,3:4], method="minkowski", diag=FALSE, upper=TRUE);
+```
+
+
+### Canberra distance
+```{r}
+options(scipen = 99);
+round( dist(chicago[,3:4], method="canberra", diag=FALSE, upper=TRUE) , 5);
+```
+
+### Other package :: philentropy
+
+```{r}
+library(philentropy); # install.packages("philentropy");
+getDistMethods();
+
+# same result, different package with more distance features
+# distance(chicago[,3:4], method="euclidean", diag=FALSE, upper=TRUE);
+```
+
+### Geographic distances :: geosphere
+
+```{r}
+##################################
+library(geosphere);  # install.packages("geosphere");
+```
+
+#### Haversine
+```{r}
+# Haversine formula is robust "crow-flies"
+distm( chicago[,2:1], fun=distHaversine);  # form is "long,lat" so reverse 
+```
+This is "Euclidean-esque" on a curved surface.
+
+
+#### Meeus
+```{r}
+distm( chicago[,2:1], fun=distMeeus);  # form is "long,lat" so reverse 
+```
+
+#### Geo
+```{r}
+distm( chicago[,2:1], fun=distGeo);  # form is "long,lat" so reverse 
+```
+
+
+### Geographic Distance :: measurements
+I am assuming the above is in "meters" and we want "miles"
+```{r}
+library(measurements); # install.packages("measurements");
+conv_unit(2.54, "cm", "inch");
+```
+
+#### Haversine
+```{r}
+conv_unit(  distm( chicago[,2:1], fun=distHaversine),  "m", "mi"); # meters to miles
+```
+
+#### Meeus
+```{r}
+conv_unit(  distm( chicago[,2:1], fun=distMeeus),  "m", "mi"); # meters to miles
+```
+
+#### Geo
+```{r}
+conv_unit(  distm( chicago[,2:1], fun=distGeo),  "m", "mi"); # meters to miles
+```
+
+We are in a range of only 1-3 miles, so these formulas don't change much.  At larger "earth-sphere" distances, they will be different.  
+
+[TODO] Type `?distm` and trace methods down the rabbit hole to define how these three forms are similar and different.
+
+### EASTER [+10]
+```{r}
+## that's cool, but this is the end-all "crow-flies" distance formula ... not manhattan
+### [+10 Easter] Can you get the accuracy of Haversine working with manhattan
+### See https://stackoverflow.com/questions/32923363/manhattan-distance-for-two-geolocations
+
+# actually, longitude is a function of latitude
+# https://gis.stackexchange.com/questions/142326/calculating-longitude-length-in-miles
+# 
+# deg2rad = function(degrees)
+#   {
+#    degrees * (pi/180);
+#   }
+# rad2deg = function(radians )
+#   {
+#   radians * (180/pi);
+#   }
+# 
+# computeLongitudeFromLatitude = function(latitude)  # in decimal degrees
+#   {
+#   1 / ( 69.172 * cos(deg2rad(latitude)) );  
+#   }
+# 
+# chicago$y.lat2 = computeLongitudeFromLatitude(chicago$latitude);
+# 
+# chicago;
+# 
+# dist(chicago[,3,5], method="manhattan", diag=FALSE, upper=TRUE);
+```
+
+# New York City area (e.g., Manhattan)
+I did NYC, you do Manhattan:
+
+```{r, chunck-dist-nyc}
+nyc.timesquare.latlong = c(40.7578705,-73.9854185);
+nyc.bull.wallstreet.latlong = c(40.705575,-74.0134097);
+nyc.lincoln.center.latlong = c(40.772, -73.9847);
+nyc.macys.latlong = c(40.7510547,-73.9904135);
+nyc.broadway.latlong = c(40.7593527,-73.9870634);
+nyc.stpatricks.latlong = c(40.758611, -73.976389);
+nyc.best.pizza.latlong = c(40.6250931,-73.9616134);
+nyc.best.cupcakes.latlong = c(40.7301048,-74.0026878);
+nyc.saks.latlong = c(40.7582027,-73.9772205);
+
+nyc = as.data.frame( matrix( c(  nyc.timesquare.latlong,
+                        nyc.bull.wallstreet.latlong,
+                        nyc.lincoln.center.latlong,
+                        nyc.macys.latlong,
+                        nyc.broadway.latlong,
+                        nyc.stpatricks.latlong,
+                        nyc.best.pizza.latlong,
+                        nyc.best.cupcakes.latlong,
+                        nyc.saks.latlong
+                      )
+                    ,ncol=2,byrow=TRUE) );
+  rownames(nyc) = c("Times Square", "The Bull on WallStreet", "The Lincoln Center", "Macy's", "Broadway (Les Miserable)", "St. Patrick's", "Di Fara Pizza", "Molly's Cupcakes", "Saks 5th Avenue");
+  colnames(nyc) = c("latitude","longitude");
+
+nyc;
+```
+
+In this RNotebook, write brief responses to the questions:
+
+####  *Question 1:*  When would the "angle of rotation" for NYC matter to compute the Manhattan Distance?  Pull up a map and notice the North-South direction of Chicago vs Manhattan.
+
+####  *Question 2:*  How does Di Fara Pizza complicate things?  How would you really have to compute distance in this scenario (thing Google Maps "walking" or "driving directions")?
+
+####  *Question 3:*  Which distance metric seems to be most conservative (overstating distance:  Manhattan, Euclidean, Haversine)?
+
+####  *Question 4:*  Which Spherical Ellipsoid Distance is most accurate (Haversine, Meeus, or Geo)?  How can you verify that?
+
+

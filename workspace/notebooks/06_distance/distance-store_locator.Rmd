@@ -1,0 +1,223 @@
+---
+title: 'R Notebook: Playing with Distance (STORE LOCATOR)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+# Setup
+
+## include-setup.R
+
+This one file has all the basic functions we need to load more functions.
+
+### source setup
+```{r}
+github.monte.raw = "https://raw.githubusercontent.com/MonteShaffer/";
+include.setup = paste0(github.monte.raw, "humanVerse/main/include.setup.R");
+source(include.setup);
+```
+
+### Custom Sourcing
+
+#### TEMP folder
+```{r}
+getSourceLocation();
+```
+
+#### source (humanVerse/R)
+```{r}
+github.monte.http = "https://github.com/MonteShaffer/";
+######## we will parse this page to get a list of the .R functions to include ########
+github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanVerse/R/"); 
+
+######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
+
+###### R::humanVerse #####
+includeGithubFolder(github.monte.humanVerse, force.download = TRUE); 
+```
+
+#### source (humanVerse/misc)
+```{r}
+######## we will parse this page to get a list of the .R functions to include ########
+github.monte.misc = paste0(github.monte.http, "humanVerse/tree/main/misc/"); 
+
+######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
+
+###### R::humanVerse #####
+includeGithubFolder(github.monte.misc, force.download = TRUE);
+```
+
+
+# Store Locator
+I did some work for a company called 'organicgirl' a few years back.  We built a store locator as part of their brand presence online.  It was in production for about 8 years.  You can check out their "updated version" that doesn't full operate.
+
+The idea is that you input a ZIP code, we have a database that loosely maps that ZIP code to a latitude and longitude.  Then you query a database to find other entities (e.g., stores) within a given radius.
+
+Searching for a radius in a database is expensive.  So it is easier to search on a square.  After SQL gives you the result for a square, you manually compute the distances of each to the query input and reduce the result said to the circle (the inscribed circle in the square).
+
+So I created a SQL sandbox and have populated it with a table of ZIPCODES for the USA and CANADA.  It has 864,000 records (most are from CANADA oddly enough).  I removed CANADA, and I believe the US-data is intack.  About 42,000 records.
+
+To keep the database connection information "PRIVATE", please see the `_SECRET_database_.txt` file in the DROPBOX (in the `_SECRET_` folder).  This is an example of some data-provenance constraints you may have.  It should not go directly into your GITHUB workspace as it should not be uploaded to the internet.  It's a "SECRET"...
+
+## Load SECRET DATABASE CONNECTION information
+```{r}
+.db.host   = Sys.getenv("WSU_SANDBOX_HOST");
+.db.name   = Sys.getenv("WSU_SANDBOX_DATABASE");
+.db.user   = Sys.getenv("WSU_SANDBOX_USER");
+.db.passwd = Sys.getenv("WSU_SANDBOX_PASSWD");
+
+# a variable with a .variable (dot at the front) will be slightly invisible
+```
+
+## Prepare SQL query
+
+```{r}
+library(RMySQL); # install.packages("RMySQL");
+
+mysql.query.template = "SELECT * FROM {tablename} WHERE zipcode = '{zipcode}';";
+  tablename = "zipcodes";
+  zipcode = "99163";
+
+mysql.query = mysql.query.template;
+  mysql.query =  gsub("{tablename}", tablename, mysql.query, fixed=TRUE);
+  mysql.query =  gsub("{zipcode}"  , zipcode, mysql.query, fixed=TRUE);
+
+mysql.query;
+```
+
+## Connect to DATABASE and RUN QUERY
+
+R drops the database connection quite frequently.  So let's connect and query at the same time.
+
+
+```{r}
+mysql.connection = dbConnect(RMySQL::MySQL(),
+                            user       = .db.user,
+                            password   = .db.passwd,
+                            dbname     = .db.name ,
+                            host       = .db.host);
+
+result = dbGetQuery(mysql.connection, mysql.query);
+result;
+```
+
+## Build a DISTANCE "BOX"
+
+We have the latitude and longitude for PULLMAN, so we can use it to find nearest neighbors.  Many times this is a store within a radius, but we will just look for other zipcodes.  In SQL, we will query in a BOX, and from the results, we will compute distances.
+
+```{r}
+radius.miles = 10;
+
+    # let's build a box
+    my.latitude = result$latitude[1];
+    my.longitude = result$longitude[1];
+    
+    delta.latitude = radius.miles / 68.703 ;
+    delta.longitude = radius.miles / (69.172 * cos(deg2rad(my.longitude))); 
+    
+    # 4 sides of the square ... CREATE A BOUNDING BOX
+    latitude.lower = my.latitude - delta.latitude;
+    latitude.upper = my.latitude + delta.latitude;
+    
+    longitude.lower = my.longitude - delta.longitude;
+    longitude.upper = my.longitude + delta.longitude;
+```
+
+## Build SQL template
+```{r}
+mysql.query.template = "SELECT * FROM {tablename} WHERE latitude > {latitude.lower} AND latitude < {latitude.upper} AND longitude < {longitude.lower} AND longitude > {longitude.upper} ORDER BY zipcode ASC;";
+
+mysql.query = mysql.query.template;
+
+
+mysql.query = gsub("{tablename}",tablename, mysql.query, fixed=TRUE);
+mysql.query = gsub("{zipcode}",zipcode, mysql.query, fixed=TRUE);
+mysql.query = gsub("{latitude.lower}",latitude.lower, mysql.query, fixed=TRUE);
+mysql.query = gsub("{latitude.upper}",latitude.upper, mysql.query, fixed=TRUE);
+mysql.query = gsub("{longitude.lower}",longitude.lower, mysql.query, fixed=TRUE);
+mysql.query = gsub("{longitude.upper}",longitude.upper, mysql.query, fixed=TRUE);
+
+mysql.query;
+
+```
+
+## Connect to DATABASE and RUN QUERY
+
+R drops the database connection quite frequently.  So let's connect and query at the same time.
+
+
+```{r}
+mysql.connection = dbConnect(RMySQL::MySQL(),
+                            user       = .db.user,
+                            password   = .db.passwd,
+                            dbname     = .db.name ,
+                            host       = .db.host);
+
+result = dbGetQuery(mysql.connection, mysql.query);
+result;
+```
+
+[TODO: how would you take this information and finalize a result?]
+
+# Mapping the results
+I have written a function that will map the results of this process.
+
+
+## My Hometown "Columbia Falls, Montana" `cfalls`
+
+- Find all ZIP codes within 22 miles of Columbia Falls, MT `cfalls` (use lat/long provide from the Wikipedia lookup)... build the bounding "box" and perform the post-hoc "radial distance" computations (as we did in the homework).
+
+```{r}
+
+# copy/paste __student_access__/_SECRET_/_SECRET_database_.txt into console...  or this won't work
+
+# SEVERAL libraries are running under the hood, if you get an error, install them.
+# library(maps);
+# library(geosphere);     # distm
+# library(measurements);  # conv_unit
+# library(RMariaDB);
+# 
+# 
+# library(RCurl);
+# library(png);
+
+cfalls.latitude = 48.37028; 
+cfalls.longitude = -114.18889;
+my.radius = 22; my.units = "mi"; #miles
+
+cfalls.info = getNeighborsFromLatLong(22, 48.37028, -114.18889, "mi");
+
+cfalls.info$neighbors;
+
+############## plotting ##############
+brown = "#ffe4c4";
+green = "#014421";
+
+my.state = "montana";
+my.state.color = "#ffe4c4";
+
+my.county = "flathead";
+my.county.color = "#014421"; 
+
+my.nearby.states = c("idaho", "washington", "oregon");
+
+
+plotNeighbors(cfalls.info, 
+                    state          = my.state, 
+                    state.color    = my.state.color,
+                    state.border   = 0.05,
+                    county         = my.county, 
+                    county.border   = 0.05,  # if you don't see the box, increase this to like 0.75
+                    county.color   = my.county.color, 
+                    nearby.states  = my.nearby.states); 
+
+```
+
+Why is the "box" not a square?

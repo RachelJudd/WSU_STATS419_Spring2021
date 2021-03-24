@@ -1,0 +1,1361 @@
+---
+title: 'R Notebook midterm: 419 Survey of Multivariate Methods'
+name: "Rachel Judd"
+email: "rachel.judd@wsu.edu"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 6
+    fig_caption: true
+    number_sections: false 
+---
+
+# Setup
+
+### source setup
+```{r}
+source("setup-owell.R");
+```
+
+### o well
+```{r}
+# options(digits = 4); # limit the matrix form
+str(wells.df);
+```
+
+### Default Group
+```{r}
+wells.df$Group = c(rep(1, 17), rep(2, 5), 3);
+```
+
+### = WSU COLORS =
+```{r}
+# https://brand.wsu.edu/visual/colors/
+wsu.crimson = "#981e32";
+wsu.gray    = "#717171";
+```
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+# TESTING PROCEDURE
+ 
+This midterm exam (Rnotebook-midterm) is a learning opportunity to review the content presented **and** to assess "weekly mini-tasks".  The total points available for this "learning opportunity" is between 150-200 points as detailed in each section below.  For each question, review how much the item is worth in terms of points and plan your time wisely. 
+
+I would deem it "unwise" to spend hours on a question that is only worth 5 points.
+
+Be certain to continue to document your "work hours" in your notebook.  Especailly this week as you work on the midterm.
+
+## Static/Existing Resources Are Allowed
+ 
+This is an open-book examination.  You can use your course notebooks (digital and old-school).  You can use Internet resources (stackoverflow, Wikipedia, and Youtube).  
+
+## Dynamic/Living Resources Are _ **NOT**_  Allowed
+
+**You cannot use a living resource on the exam.**  That would include a classmate, student, sibling, parent, a tutor, online forums (where you ask the question after the exam period has begun). 
+
+## Questions?
+If you have questions that need clarifying, please **privately chat with instructor (rocket.chat)**.  Office hours will be held at normal times (and during normally scheduled class time as this is a **takehome** exam).  The instructor will help you with any technical difficulties associated with getting the notebook to function.
+
+## Deliverable
+You should move the "midterm" folder to your local workspace.  Once completed, you should move this folder into your Dropbox "deliverable" folder. 
+
+## Deadline
+The midterm should be submitted in your Dropbox account before midnight (Sunday March 3/21, vernal equinox?)
+
+## Levels of Mastery
+
+* Do You **Remember**?
+* Do You **Understand**?
+* Can You **Apply** what you remember/understand to another similar problem?
+* Can You **Analyze** and **Synthesize** Data?
+* Can You **Evaluate** your analyses?
+* Can You **Create** meaningful visualizations and summaries?  
+
+## Rubric of Mastery 
+ 
+For every 10 points, this is the general breakdown.
+ 
+| Emerging       | Developing     | Mastering    |
+| :------------- | :----------:   | -----------: |
+| 0-4            |  5-7           | 8 - 10       |
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+# COURSE EXPECTATIONS (e.g., the "syllabus")
+
+## Instructor's objective (10 points)
+
+Describe how the instructor has designed this course.  Be certain to include a statement of his primary objective, summarize sub-objectives, communicate how this design is "similar to" other courses you have taken at university, and communicate how it is "different from" other courses you have taken at university.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The instructor has designed this course to give an overview of multivariate statistics, encouarage creativity, and help students become self-directed learners. []. The course is designed to move at the pace of actual data analysis jobs so students will be prepared to work at that pace after they graduate. This class is similar in design to university art classes, with the lack of grade feedback (except upon direct request) other than at midterms and finals. This test is similar to a criminal justice final, with lots of essay-type questions and days to finish it in. The timeframe for finishing assignments and exams is also similar to other math classes. This class is different from university art classes because in art, we had to review everyone else's projects and provide our own feedback to them, and in this class we don't have to do that. This class is also different from criminal justice classes because there are more assignments with less weight (usually, 200 points is half of the grade in the class) and we have more time for takehome exams. 
+
+-- WRITE SOMETHING HERE --
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Proportion of Statistical Methods (10 points)
+
+Statistics is defined as "the discipline that concerns the collection, organization, analysis, interpretation and presentation of data." (See <https://en.wikipedia.org/wiki/Statistics>)
+
+Are each of these five factors equally weighted?  Should they be?
+
+### What is traditionally taught at university
+
+Below, change the value of `x` to represent how you perceive "statistics" is generally taught at university based on these 5 factors:  "collection", "organization", "analysis", "interpretation", "presentation". 
+
+That is, what proportion of time is spent teaching about "data collection"?  What proportion of time is spent teaching about "data organization" (cleanup)?  And so on.
+```{r}
+x = c(12,6,35,35,12);
+
+
+x.labels = c("collection", "organization", "analysis", "interpretation", "presentation");
+x.colors = c("blue", "lightgreen", "darkgreen", "orange", "red");
+
+barplot(x, 
+        col = x.colors,
+        ylim = c(0, 40),
+        ylab = "Proportion: (Sums to 100)",
+        main="Traditional view of Statistics");
+
+
+text(1.14* (1:5), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+```
+
+
+### How the instructor perceives statistics
+
+Below, change the value of `x` to represent how your INSTRUCTOR is trying to teach statistics (in this multivariate course) based on these 5 factors:  "collection", "organization", "analysis", "interpretation", "presentation". 
+
+```{r}
+x = c(20,20,20,20,20);
+
+
+x.labels = c("collection", "organization", "analysis", "interpretation", "presentation");
+x.colors = c("blue", "lightgreen", "darkgreen", "orange", "red");
+
+barplot(x, 
+        col = x.colors,
+        ylim = c(0, 25),
+        ylab = "Proportion: (Sums to 100)",
+        main="Instructor view of Statistics");
+
+
+text(1.14* (1:5), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+```
+
+### How you perceive statistics
+
+Below, change the value of `x` to represent how you perceive "statistics" based on these 5 factors:  "collection", "organization", "analysis", "interpretation", "presentation".  
+
+What proportion of the time should be devoted to teaching you about "data collection"?  And so on.
+
+```{r}
+x = c(20,20,20,20,20);
+
+
+x.labels = c("collection", "organization", "analysis", "interpretation", "presentation");
+x.colors = c("blue", "lightgreen", "darkgreen", "orange", "red");
+
+barplot(x, 
+        col = x.colors,
+        ylim = c(0, 25),
+        ylab = "Proportion: (Sums to 100)",
+        main="Student view of Statistics");
+
+
+text(1.14* (1:5), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+University Tradition: Data collection and presentation is traditionally taught in research methods classes, not the strictly statistics classes. In these research methods classes, emphasis is placed on ethical and proper collection/sampling techniques so when the students start working in the field they will know how to ethically collect data without skewing the results. In the strictly statistics classes, there is some presentation (mostly how to write the results of a hypothesis test like it's in an APA style journal article) and the rest of the time is devoted to analyzing the data and interpreting the results. Data organization (in my classes, if it was covered, it wasn't called by such terms) is a very small portion of the class, and most of it is done by the instructor or TAs so the students can do the rest of the things easier/faster. 
+
+Instructor Protocol: Since in class, the instructor mentioned refusing to work with bad data, data collection must be important. Since we've had to extract data and make it readable in assignments, data organization/cleaning is important. Because "one graphic" is a theme of the class, presentation is also important. 
+
+Personal Belief: If we are to work in statistics, we should know how to do each of the five factors. We need to know how to collect data so we have data to work with and are able to evaluate how good the data is. We don't want to skew the results of the analysis because we made an error in the data collection. We need to know how to organize the data so we don't get lost and miss important details and also to make it easier to find the things we are interested in. We need to know how to analyze the data to find the answers to our questions of the data. We also need to know how to interpret the results so we don't give incorrect recommendations to people. We also need to know how to present our findings to clearly communicate the results so people can make informed decisions. Without a good foundation in the data collection, there's no point in organizing, analyzing, interpreting, or presenting the results because the data itself is flawed and can only lead to flawed conclusions. Without presentation, any interpretation of the data is meaningless because it won't help anyone if no one ever gets to hear the results. 
+
+-- WRITE SOMETHING HERE --
+</pre>
+
+[The entire question is worth 10 points, including the 3 visualizations.  Describe how you arrived at the proportions for each:  university tradition, instructor protocol, your personal belief.]
+
+
+
+## Learning Theory (10 points)
+
+According to experts, learning is not a "hierarchy" but rather a "nonlinear" immersion of language:  <https://www.edweek.org/education/opinion-heres-whats-wrong-with-blooms-taxonomy-a-deeper-learning-perspective/2018/03> (PDF version is in "misc" folder of this "midterm").
+
+
+### Bloom Taxonomy
+In the traditional Bloom model (see graphic referenced above), I would cluster the elements by pairing some learning elements:
+
+- [High school] Knowledge/Comprehension:  "what is the definition" and "what does it mean"
+- [Early university] Application/Analysis:  "how to apply the data" and "how to decompose the concept into subparts"
+- [Seniors at university] Synthesis/Evaluation: "how to integrate subparts or concepts" and "how to evaluate" so you are prepared to create
+
+As students in a senior-level university course, my expectations are that you can refer to modern "textbook resources" (e.g., Brother Google, Stackoverflow, Wikipedia) and perform the "lower-ordered thinking" on your own.
+
+### Learn by doing
+In my estimation, the following quote reflects how learning works:  'We remember 10% of what we "hear", 50% of what we "see", and 90% of what we "do"'.  This is the foundation of an apprenticeship model.
+
+Statistics is a language and I have chosen to immerse you in multivariate statistics by providing a "survey" of several key topics.  Simultaneously, as the instructor I join in the "practice" to demonstrate how apprenticeship works.  I provide you with a "411" on the needed tools I perceive important for you to succeed as a data analyst assessing multivariate data.  Specifically, I have stated the following in the syllabus:
+
+### Instructor Expectation
+"The real (nonacademic) world moves fast, and I need to enable you to succeed there.  My goal is to empower you, but that requires challenging you.  Some of you may struggle with the intentional nonlinearity, vaguities (vagueness, YES, I made that word up), and other quirks you may find unsettling.  The purpose is to empower you to become innovators and creators in a future I cannot predict."
+
+### Think about Thinking/Learning (Student Response)
+Process the above information and write a response expressing your opinion about how learning works.  You do not have to agree with the "expert opinion" expressed in the website/PDF.  You do not have to agree with the instructor's opinion.  You do have to coherently "think about thinking" and articulate a response.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+To learn something, you definitely have to do it. You could read a book on riding horses, watch people ride horses all day, understand and remember everything, and still be absolutely horrible at riding when you try it yourself. 
+You also have to pay attention to what you're doing and fix mistakes because otherwise you will continue to make the same mistake over and over again, never learning the correct way to do things. Then the wrong way will become a habit and it will be even harder to learn the correct way. 
+
+-- WRITE SOMETHING HERE --
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+
+## Self-determination (10 points)
+
+My five-year old recently shared the following while we were at Myrtle Beach over winter break picking up sea-shells:  "Alex is the boss of Alex; daddy is the boss of daddy.  Is that right?" 
+
+[Today is 3/14, as in 3.14159 2653589 7923284 626 ... Alex has been taught this number in song firm at a very young age: <https://www.youtube.com/watch?v=rKq4l5CiIOo>]
+
+Utilizing details specific to the Ryan/Deci explanation of self-determination theory and intrinsic motivation, respond to the statement of my son.  Your response should demonstrate your understanding of the conversation as it relates to: (1) your natural-self personality, (2) the instructor's natural-self personality, (3) each of your team-member's natural-self personality.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+If you're your own boss, then you would have to be intrinsically motivated to get anything done because there wouldn't be external rewards/punishments. 
+
+People with an E-5 personality would likely be instrinsically motivated to talk to people. [].
+
+People with a D-5 personality would likely be instrinsically motivated to [].
+
+People with an C-1 personality would likely be intrinsically motivated to follow the rules and do the right thing, not needing external controls like speeding tickets and arrests to keep them in line. 
+
+People with a D-1 personality would likely be intrinsically motivated to [].
+
+-- WRITE SOMETHING HERE --
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+# Central Tendencies
+
+## Example 1
+Below is a list of the first 32 prime numbers.
+```{r}
+x = pracma::primes(135);
+length(x);
+x;
+```
+
+### mean
+
+```{r}
+mean(x);
+```
+
+### doMean
+
+```{r}
+doMean(x);
+```
+
+### median
+
+```{r}
+median(x);
+```
+
+### doMedian
+
+```{r}
+doMedian(x);
+```
+
+### Student Response (5 points)
+Based on "lecture", what is the above output demonstrating?  Of the two "central tendencies", which would John Tukey prefer?  Why would the instructor prefer the `doMean` over the `mean` and the `doMedian` over the `median`?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The above output is demonstrating two traditional measures of central tendency and two instructor-adjusted measures of central tendency. John Tukey would prefer the median because it cuts the data in half. The instructor would prefer doMean over mean because the doMean finds the datapoint closest to the traditional mean. This ensures that the "mean" or "median" is actually in the dataset and makes sense with the rules of the dataset. In the original measure of the median, it averages the two middle data points when there is an even number of points. In the above example, this makes the median 56, which is NOT a prime number and NOT in the original dataset. Therefore, it does not make sense for 56 to be the middle data point. The same is true for the mean. The original mean is 57.84375 which is not a whole, prime number and doesn't exist in the dataset. The doMean is 59, which follows the rules of the dataset and is an actual data point.
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Example 2
+
+Let's assume 20 students are in a course.
+```{r}
+hate.group = 12;
+love.group = 8;
+
+set.seed(123); x = rnorm( hate.group, mean = -5, sd = 2);
+set.seed(456); y = rnorm( love.group, mean = 3,  sd = 1);
+
+xy = c(x,y);
+hist(xy);
+```
+
+
+
+### Student Response (5 points)
+
+By construction is this data 'bimodal'?  Is the data 'bivariate'?  Below respond to these questions **WHILE** you detail what the code is doing.  What does `set.seed` do?  How is `x` constructed with the given parameters?  How is `y` constructed with the given parameters?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The data is bimodal and bivariate. "set.seed" is determining the how the numbers are randomly generated for the sample. "rnorm" is randomly sampling from the normally distributed variables. x is constructed by randomly sampling from the 12 person hate.group, with a mean of -5 and a standard deviation of 2, using the seed of 123. y is constructed by randomly sampling from the 8 person love.group, with a mean of 3 and a standard deviation of 1, using the seed of 456. There are peaks at both the mean of y and the mean of x, showing that the data is bimodal. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+# Alphabet Soup (10 points)
+
+As a task in the course, you had to build a data-frame to compare different versions of the U.S. Declaration of Independence (original draft and final version).  Build a side-by-side visualization (**One Graphic**) below that is easy to interpret.  [I would prefer you use your own creativity but `?stars` may help some of you.]
+
+```{r}
+# -- INSERT CODE HERE --
+## LOAD THE DATA (either Github or Dropbox)
+## Show a visualization of the multivariate data.
+which.github = "local";  # local ... remote 
+
+github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+
+
+
+if(which.github == "remote")
+  {
+  mypath = paste0(github.remote, "functions/")
+  # include.me = paste0(github.remote,"https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R");
+#   library(devtools);
+#   source_url(include.me);
+  } else {
+    mypath1 = paste0(github.local, "functions/")
+#           include.me = paste0( github.local, "functions/functions-intro.R");
+#           library(devtools);
+#           source(include.me);
+  }
+path.data1 = paste0(mypath, "functions-intro.R")
+```
+
+```{r}
+countLetterInString=function(str,letter)
+{
+  nchar(as.character(str)) -nchar( gsub(letter, "", str,fixed=TRUE))
+}
+AlphabetCounter = function(str)
+{
+  str=gsub("[[:space:]]", "", str)
+  str=tolower(str)
+  df=data.frame(matrix(0, nrow=1, ncol=27, byrow=TRUE))
+  colnames(df)=c(letters,"OTHER")
+  for (letter in letters)
+  {
+    idx = which(letters == letter)
+    df[1,idx] = countLetterInString(str,letter)
+    str=gsub(letter,"",str,fixed=TRUE)
+  }
+  df[1,27]=nchar(str)
+  df;
+}
+# readChar()
+```
+
+```{r}
+path.declaration = paste0(github.local,"datasets/declaration/");
+final = readChar(paste0(path.declaration,"final.txt"),99999)
+draft = readChar(paste0(path.declaration,"draft.txt"),99999)
+df=NULL
+df=rbind(df,AlphabetCounter(draft))
+df=rbind(df,AlphabetCounter(final))
+rownames(df)=c("draft","final")
+
+
+```
+
+
+```{r}
+prop=df #proportion
+prop[1,]=prop[1,]/sum(prop[1,])
+prop[2,]=prop[2,]/sum(prop[2,])
+rowSums(prop)
+```
+
+```{r}
+myMatrix1 = matrix(c(0.06675487,0.01407265,0.02706279,0.03127255,0.1311042,0.02958865,0.01972576,0.05304306,0.06916045,0.002285302,0.002405581,0.03175367,0.02357469,0.06567236,0.07914361,0.02165023,0.0008419533,0.06687515,0.06879962,0.09514073,0.02934809,0.01166707,0.01563628,0.001443349,0.01299014,0.0003608371,0.02862641,
+                    0.07113095,0.01413690,0.02708333,0.03764881,0.1281250,0.02678571,0.01934524,0.05193452,0.06681548,0.002380952,0.002083333,0.03392857,0.02157738,0.07202381,0.07604167,0.02053571,0.0008928571,0.06309524,0.07098214,0.09464286,0.03065476,0.01101190,0.01443452,0.001636905,0.01205357,0.0005952381,0.02842262), nrow=2, byrow=TRUE);
+prop2 = prop
+dp = data.frame( draft = c(0.06675487,0.01407265,0.02706279,0.03127255,0.1311042,0.02958865,0.01972576,0.05304306,0.06916045,0.002285302,0.002405581,0.03175367,0.02357469,0.06567236,0.07914361,0.02165023,0.0008419533,0.06687515,0.06879962,0.09514073,0.02934809,0.01166707,0.01563628,0.001443349,0.01299014,0.0003608371,0.02862641), 
+                 final = c(0.07113095,0.01413690,0.02708333,0.03764881,0.1281250,0.02678571,0.01934524,0.05193452,0.06681548,0.002380952,0.002083333,0.03392857,0.02157738,0.07202381,0.07604167,0.02053571,0.0008928571,0.06309524,0.07098214,0.09464286,0.03065476,0.01101190,0.01443452,0.001636905,0.01205357,0.0005952381,0.02842262));
+rownames(dp)=c(letters,"OTHER");
+
+prop2 = do.call(rbind, dp);
+
+```
+
+```{r}
+barplot(myMatrix1, names.arg=(rownames(dp)), cex.names=0.78, cex.axis=0.9, beside = TRUE, ylim = c(0,0.14),axisnames=TRUE, axis.lty=1, las=2, legend.text = colnames(dp), xlab="Alphabet Count", ylab="Proportion");
+text(seq(1.5, en), par("usr")[3]-0.25, 
+     srt = 45, adj = 1, xpd = TRUE)
+```
+
+
+Report on your analysis.  Did you scale the data?  If so, how and why?  What conclusions can you draw from the side-by-side visualization?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+I scaled the data by figuring out the proportion each letter/character had in the two documents. This allows for easier comparison between the documents because the abundance of each letter was on the same scale. This eliminates the question of whether a document has more of a letter simply because it is longer and has more opportunities for the letter to appear. The final version has a higher proportion of a's, d's, l's, n's, s's, u's, x's, and z's. The two versions had equal proportions of b's, c's, j's, k's, q's, and OTHER characters. The draft version had a higher proportion of the rest of the characters. 
+
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+# Standardized Test Scores
+
+## Example 1
+
+Student A takes an Iowa Basics Test in 1989 and scores in the 99-th percentile.
+
+Student B takes an Iowa Basics Test in 1999 and scores in the 95-th percentile.
+
+### Student Response (5 points)
+
+Is there a 100-th percentile?  How are the percentiles in a given year calculated?  What "assumption(s)" would we have to make to conclude Student A outperformed Student B?
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+There is not a 100-th percentile. If there was a 100-th percentile, a person would have to score better than themselves on the test, which is impossible. Also, if there was a 100-th percentile, how do you explain how people with perfect scores on tests end up in the 99-th percentile? That would indicate the presence of extra credit or grading errors. 
+
+The percentiles in a given year are calculated by gathering all the scores from a reference group and comparing all new scores to that. If Student A scored better than 99% of the people in the reference group, then they would be in the 99th percentile. 
+
+One assumption needed to conclude Student A did better than Student B is that the difficulty of the test items did not change between testing times. You would also have to assume there were no errors in the grading process or that any errors affected both students equally, with the same effect on both of their scores. Another assumption would be that the students didn't cheat. Also, the testing conditions would need to be the same for one to be able to outperform the other. We would also need to assume that the reference groups for each of the years had the same distribution of scores and were representative. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Example 2
+
+Student A takes ACT test in 1990 and scores 30 on the composite which is associated with the 97-th percentile.
+
+Student A takes ACT test in 1991 and scores 33 on the composite which is associated with the 99-th percentile.
+
+### Student Response (5 points)
+
+Did the student improve?  What assumptions would you have to make to draw that conclusion?  
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+In order for Student A to improve, we would have to assume that the test was equivalent in difficulty between each testing time, that there weren't any repeat questions on the second test that Student A could have remembered the answers from the first test, and that there weren't any grading errors on either of the tests or that the grading errors were equivalent on the two tests. We would also have to assume that Student A didn't get the answers ahead of time for either test. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+### Student Response (5 points)
+
+- <https://blog.prepscholar.com/historical-act-percentiles-2015-2014-2013-2012-2011>
+- <https://blog.prepscholar.com/act-percentiles-high-precision>
+
+Using the "high-precision" 2021 data, what are the respective percentiles for ACT scores of 30 and 33 in 2021?  Discuss how those percentiles compare to the 1991 era.  How are they different?  Can we conclude that a student getting a 33 in 2021 is better/worse than getting a 33 in 1991?
+
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The high precision percentile for a score of 30 is 91.2441 and the high precision percentile for a score of 33 is 96.9227. In 1991, a score of 33 was in the 99th percentile. These scores are different because there were different reference groups between the years. More people got high scores on the ACT in 2021 than in 1991, so the percentiles were lower in 2021. A score of 33 is worse in 2021 than in 1991 because the associated percentile is lower. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;"> 
+
+## Example 3
+
+Student G studies for six months and scores a composite 800 on the GMAT test in 1984 (the highest possible score).
+
+### Student Response (5 points)
+
+What percentile would Student G be placed in?  By definition, would this classify this student as a "outlier"?  Are outliers "normal or average"? 
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Student G would be placed in the 99th percentile. Whether Student G was an outlier would depend on the distribution of the rest of the scores. If the distribution of scores was negatively skewed and lots of people got near perfect scores, than Student G would not be an outlier. If the distribution was positively skewed, Student G would likely be an outlier. Student G would also be more likely to be an outlier if the scores were normally distributed. Outliers are not normal or average, but they can dramatically affect means and correlations, making them much higher or lower than they would have been without the presence of outliers. 
+
+</pre>
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;"> 
+
+## Example 4
+
+Student A studies for two days and scores a composite 720 on the GMAT test in 2004 which is associated with the 97-th percentile. 
+
+### Student Response (5 points)
+
+Who performed better:  Student G or Student A?  What assumptions are you making?  How would you defend your conclusion?
+ 
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+From an efficiency standpoint, Student A did better. In 1% of Student G's time studying, Student A got 90% of Student G's score. If Student A's score would have mapped into the 99th percentile in 1984, then there would be practically no distinction between the two students' performance (except maybe for scholarships for perfect scores that a plain 99th percentile student would not have gotten). If Student A's score would still have been the 97th percentile in 1984, Student A still got into the top 5%, which with a good GPA and other qualifications, would make them eligible for a lot of good schools. 
+
+The assumptions are that the students didn't cheat or bribe/threaten someone to change their grade, there were no grading errors or the grading errors affected both students equally, and that studying positively impacted the students' scores.
+
+</pre>
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;"> 
+
+### Student Response (5 points)
+
+In summary, what are some key aspects of the standarized percentiles?  When and how should we compare percentiles across samples?  Why would John Tukey prefer a "percentile" over an "average" score?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Some key aspects about standardized percentiles are that scores are compared to a reference group. Percentiles on standardized tests can change across years. We should compare percentiles across samples when [].A percentile shows more about how well a person did in comparison to others than an average score. An average score doesn't really show outliers (although outliers can affect it), but percentiles show the outliers. 
+
+</pre>
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+# Probability
+
+A division of the National Science Foundation awards grants based on a panel review.
+
+In Year X, the probability of receiving an award was 14/172.
+
+In Year Y, the probability of receiving an award was 12/161.
+
+In Year Z, the probability of receiving an award was 18/211.
+
+
+### Student Response (10 points)
+
+Assume that a grant seeker GS submitted an application in years X, Y, Z.  Compute the following probabilities:
+
+- That zero grants were awarded (0/3)
+- That one grant was awarded (1/3)
+- That two grants were awarded (2/3)
+- That three grants were awarded (3/3)
+
+```{r}
+# -- INSERT CODE HERE --
+ZeroGrants = (158/172)*(149/161)*(193/211);
+print(ZeroGrants);
+```
+```{r}
+oneGrant = (14/172)+(12/161)+(18/211)
+print(oneGrant);
+```
+
+```{r}
+twoGrants = (168/27692)+(216/33971)+(252/36292)
+  print(twoGrants);
+```
+
+```{r}
+threeGrants = (14/172)*(12/161)*(18/211)
+  print(threeGrants)
+```
+
+
+Be certain to carefully think about what assumptions you are making when you apply "probability calculations" to this problem.  Are those assumptions valid?
+
+In context of this problem, at what point would the grant seeker GS move from "normal" to an "outlier"?  [Decide on 0/3, 1/3, 2/3, or 3/3 and defend your answer.]
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Assumptions: One application per year, one grant per application. Failure in one year does not increase or decrease chances for success in another year and success in one year does not affect chances of success in other years. NSF doesn't give feedback on how to improve unsuccessful grant proposals so applicants are no better prepared in subsequent years. GS can't look at the grant proposals that were accepted and note any common themes that he could implement in his own proposal to improve the quality of his application, increasing his chances of success. GS isn't recycling the same application every year.
+
+The assumptions may not be valid. Even without specific feedback, GS could learn from his failed proposals in early years and improve his writing and planning skills, thereby increasing his chances of receiving a grant in later years. 
+
+Using an alpha level of 0.05, GS would move from normal to outlier when he got 2/3 of the grants because the probability of that happening is 0.02 (a 2% chance). If the alpha level was instead 0.01, GS would be an outlier at 3/3 with a probability of 0.0005 (a 0.05% chance). I am satisfied that he is an outlier with a 2% chance of success in getting 2/3 grants. 
+
+</pre>
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+
+# Bivariate correlation
+Recall that in the notebook "bivariate-statistics", correlation was introduced.    
+
+### Student Response (5 points)
+
+Succinctly explain what is correlation and how it works so your grandpa (or grandma or someone that is of that age that doesn't know much about statistics) can understand.  Maybe come up with a simple bivariate example.  
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+A correlation describes the relationship between two variables (if a relationship exists), like altitude and elements in water. Correlations can range from -1 to 1. A correlation of 0 means that there is no relationship between the variables and a correlation of -1 or 1 means there is a perfect relationship between the variables. A correlation can be positive, such as when altitude increases then lead levels also increase. A correlation can also be negative, such as when altitude increases, sodium levels decrease. A correlation between two variables doesn't mean that one is causing the other. An unknown third variable could be causing both of the variables in question or the variables could have a reciprocal relationship, where both variables cause the other. An example of a reciprocal relationship would be if a rise in altitude caused a rise in lead levels and also the rise in lead levels caused a rise in altitude. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+# O-well
+
+## Data Dictionary (10 points)
+
+Build a dataframe with four columns:  variable, property, units, description...  For columns 14:54
+
+e.g., "pH", "hydrogen", "log scale", "potential (power) of hydrogen"
+e.g., "Eh", "electric", "milliVolts", "Redox"
+
+```{r}
+# -- INSERT CODE HERE --
+which.github = "local";  # local ... remote 
+
+github.local = "C:/_git_/github/RachelJudd/WSU_STATS419_Spring2021/";
+github.remote = "https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/";
+
+
+
+if(which.github == "remote")
+  {
+  mypath = paste0(github.remote, "workspace/midterm/")
+  # include.me = paste0(github.remote,"https://raw.githubusercontent.com/RachelJudd/WSU_STATS419_Spring2021/main/functions/functions-intro.R");
+#   library(devtools);
+#   source_url(include.me);
+  } else {
+    mypath = paste0(github.local, "workspace/midterm/")
+#           include.me = paste0( github.local, "functions/functions-intro.R");
+#           library(devtools);
+#           source(include.me);
+  }
+path.data = paste0(mypath, "misc/")
+```
+
+```{r}
+storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+  {
+  if(quote == "") { quote = FALSE; }
+  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  }
+
+readFromPipe = function(file, header=TRUE, quote="", sep="|")
+  {
+  utils::read.csv(file, header=header, quote=quote, sep=sep);
+  }
+```
+
+```{r}
+file = paste0(path.data, "data-dictionary.txt");
+# readFromPipe(file, header=TRUE, quote="", sep="|");
+dataDictionary = data.frame(readFromPipe(file, header=TRUE, quote="", sep="|"))
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Distance
+
+```{r}
+library(geosphere);  
+library(measurements); 
+library(pracma); 
+
+names(wells.df);
+```
+
+```{r}
+d1 = as.matrix ( dist( wells.df[,55:56], 
+             method="euclidean", diag=TRUE, upper=TRUE) );
+```
+
+### Student Response [d1] (5 points)
+
+Describe what is going on above.  What is `library` doing?  What is `names` doing?  What is `d1` doing?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+"Library" is calling up the geosphere, measurements, and pracma packages because the code below will rely on these packages. "Names" is printing out all the column names for the wells.df dataframe. "d1" is finding the euclidean distance (shortest path between points, not accounting for earth curvature) between the wells using latitude and longitude (measured in miles). "d1" presents this information as a matrix. Because "diag = TRUE", the values on the diagonal of the matrix will be printed and because "upper = TRUE", the values above the diagonal in the matrix will also be printed. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+```{r}
+d2 = conv_unit(  distm( wells.df[,3:2], fun=distGeo) ,  "m", "mi");
+```
+
+### Student Response [d2] (5 points)
+
+Describe what is going on above.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+"d2" is printing out a matrix containing the distances between the wells (measured in miles). "distm" is making a distance matrix using the longitude and latitude (measured in degrees) from the wells.df data frame. "fun=distGeo" means that distm is using the distGeo function to find the distances. The distGeo function finds the shortest distance on an ellipsoid, with the default setting being the WGS84 ellipsoid (the current most accurate Earth model). "conv_unit" converts the distance from meters ("m") to miles ("mi").
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+```{r}
+sum( d2 - d1 ) / (nrow(d2) * ncol(d2));
+```
+
+### Student Response [sum] (5 points)
+
+Describe what is going on above.  Given the nature of our "o-well" locations, is Euclidean sufficient?  How much better is the `?distGeo` method.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+"d2 - d1" is subtracting the matrix d1 from the matrix d2. "sum" is adding together all of the differences and "/ (nrow(d2) * ncol(d2)" is dividing this sum by the number of entries in the matrices (the number of rows in d2 multiplied by the number of columns in d2. d1's number of rows and columns could have been used instead, getting the same result because the two matrices are the same size). This gives the average difference in distance between the Euclidean method and the distGeo method. The o-well location is approximately 2° latitude by 1° longitude, so the Euclidean distance is probably sufficient, depending on what the distance is going to be used for. If it's going to be used for something requiring high precision, distGeo would be better, but if it's going to be used for something where significant figures would make d1 and d2 essentially the same anyway, Euclidean would be fine.  
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Distance Clusters
+
+Select which "distance" form you are going to use: `d1` or `d2`.
+```{r}
+whichD = as.dist(d2); # convert matrix to dist "class"
+```
+
+```{r}
+latlon.hclust = hclust(whichD, method="complete");
+plot(latlon.hclust, main="Latitude/Longitude (complete)");
+```
+
+```{r}
+latlon.hclust = hclust(whichD, method="ward.D2");
+plot(latlon.hclust, main="Latitude/Longitude (ward.D2)");
+```
+
+
+### Student Response (5 points)
+
+Why should you run these two different methods as suggested above?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+If you run two different approaches and reach the same answer, you can be a little more confident that your answer is correct. It would also indicate stability.  
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+Select how many clusters you think are in the data based on "longitude" and "latitude".
+```{r}
+numberClusters = 1;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Metals EigenRank of Wells
+
+```{r}
+# names(wells.df);
+metals = wells.df[,14:28];
+  rownames(metals) = wells.df$well;
+# metals;
+WM = as.matrix(metals);
+MW = transposeMatrix(WM);
+WW = WM %*% MW;
+
+metalRank = matrix.computeEigenRank(WW, "power", "max-100", pow=22);
+metalRank;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Metals EigenRank of Wells (Scaled)
+```{r}
+# names(wells.df);
+metals.s = scale(wells.df[,14:28]);
+  rownames(metals.s) = wells.df$well;
+# metals.s;
+WM = as.matrix(metals.s);
+MW = transposeMatrix(WM);
+WW = WM %*% MW;
+
+metalRank.s = matrix.computeEigenRank(WW, "power", "max-100", pow=22);
+
+metalRank.s;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+```{r}
+cor(metalRank, metalRank.s);
+```
+
+### Student Response (5 points)
+
+Does the correlation surprise you?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The correlation was in the same direction and on the same side of 0.5 as I was expecting. I was surprised it wasn't a stronger correlation. 
+
+-- WRITE SOMETHING HERE --
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+Write code that builds these two outputs in a side-by-side dataframe, aligned by wells.
+
+```{r}
+# -- INSERT CODE HERE --
+# metalRank;
+# metalRank.s;
+matrix1 = matrix(c(40.23405,28.92530,42.00734,26.57670,26.19746,29.47842,25.12973,33.28577,26.02952,47.86170,31.53788,29.64482,50.95065,31.54732,36.14474,55.30780,38.03512,77.49204,87.24693,100.00000,64.58009,76.53091,26.67866,
+            92.11344,98.22633,95.87194,97.80407,99.82527,98.40818,98.24658,99.78151,96.92223,99.59167, 99.79042,98.11332,81.96120,92.69328,94.73644,91.77331,100.00000,95.86923,95.23881,93.01082,96.75443,96.05391,96.79781, nrow=2, byrow = TRUE));
+Metals.SideBySide.df = data.frame(metalRank = c(40.23405,28.92530,42.00734,26.57670,26.19746,29.47842,25.12973,33.28577,26.02952,47.86170,31.53788,29.64482,50.95065,31.54732,36.14474,55.30780,38.03512,77.49204,87.24693,100.00000,64.58009,76.53091,26.67866),
+                                  metalRank.s = c(92.11344,98.22633,95.87194,97.80407,99.82527,98.40818,98.24658,99.78151,96.92223,99.59167, 99.79042,98.11332,81.96120,92.69328,94.73644,91.77331,100.00000,95.86923,95.23881,93.01082,96.75443,96.05391,96.79781));
+
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+When you compare the results side-by-side, what do you notice?  What did the "scaling" do to the resulting "eigenRank" data?  Why would it be best to use the "unscaled" version?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The rank order is not the same for metalRank and metalRank.s. Also, the scaled data covers a shorter range than the unscaled data, with the ranks between 80 and 100. The original data has a wider variation, with the ranks between 25 and 100. Since scaling the data changes the rank, it would be better to use the unscaled data because then the rank is not influenced by an artificial filter. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Chemistry EigenRank of Wells
+
+```{r}
+# names(wells.df);
+chemistry = wells.df[,32:41];
+  rownames(chemistry) = wells.df$well;
+# chemistry;
+WC = as.matrix(chemistry);
+CW = transposeMatrix(WC);
+WW = WC %*% CW;
+
+chemistryRank = matrix.computeEigenRank(WW, "power", "max-100", pow=22);
+chemistryRank;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Chemistry EigenRank of Wells (Kitchen Sink)
+
+Everything from Table 2
+```{r}
+# names(wells.df);
+chemistry.k = wells.df[,29:48];
+  rownames(chemistry.k) = wells.df$well;
+# chemistry.k;
+WC = as.matrix(chemistry.k);
+CW = transposeMatrix(WC);
+WW = WC %*% CW;
+
+chemistryRank.k = matrix.computeEigenRank(WW, "power", "max-100", pow=22);
+chemistryRank.k;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+```{r}
+cor(chemistryRank, chemistryRank.k);
+```
+
+### Student Response (5 points)
+
+Does the correlation surprise you?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The correlation was in the same direction and the same side of 0.5 as I was expecting. Based on the correlation of the other matrix and its transpose, I was thinking this one might be closer to .66-.75. If I had paid more attention to the ranking output before I made my guess, I might not have been so surprised since the two outputs have more wells in the same order than the metal ranks did. 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+Write code that builds these two outputs in a side-by-side dataframe, aligned by wells.
+
+
+```{r}
+# -- INSERT CODE HERE --
+# chemistryRank;
+# chemistryRank.k;
+chemistry.sideBySide.df = data.frame(chemistryRank = c(33.06127,31.19755,33.06925,32.03683,30.57289,33.85476,33.08856,29.34747,33.41892,33.22496,27.62277,26.98070,34.80677,41.06092,38.86120,28.30765,26.68699,63.83209,76.79481,100.00000,45.01111,63.71766,26.62582), chemistryRank.k = c(35.01954,32.24586,33.36315,33.93255,31.93173,32.79700,34.57585,29.56657,34.73066,31.83617,27.38420,28.29334,36.56416,46.08914,42.50519,29.04127,25.93151,49.80872,75.06691,100.00000,39.46801,62.96264,22.96133));
+```
+
+Is the ranking between `chemistryRank` and `chemistryRank.k` much different? 
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Wells 23, 17, 16, 8, 3, 9, 13, 19, and 20 are in the exact same position in both ranks. Wells 11 and 12, 22 and 18, and wells 1 and 6 are transposed. Wells 5 and 2 and Wells 15 and 14 are in the same order just shifted one spot in the chemistryRank.k rankings. Wells 10, 4, 7, and 21 are in different orders between the two rankings. The ranking numbers cover a similar range between chemistryRank and chemistryRank.k.
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Geology EigenRank of Wells
+
+```{r}
+# names(wells.df);
+geology = wells.df[,8:13];
+  rownames(geology) = wells.df$well;
+# geology;
+WG = as.matrix(geology);
+GW = transposeMatrix(WG);
+WW = WG %*% GW;
+
+geologyRank = matrix.computeEigenRank(WW, "power", "max-100", pow=22);
+geologyRank;
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+Looking at the "map" of the "o-well" PDF, why would Well-2 be the highest ranked on this "geology index"?  Why would Wells-(6,7,9,10,12,13,14,15) all have basically the same lowest ranking?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Wells with more than one soil type are highest ranked (except for those wells containing conglomerate) followed by only sand wells. Those wells with conglomerate as one of two soil types are the next highest ranked. Solely alkaline wells are rated higher than solely volcanic, granite, or gypsum wells. Well 2 is one of two wells containing three soil types and it contains sand instead of 16's volcanic. Wells 6,7,9,10,12,13,14, and 15 each have only one soil type and that type is volcanic, granite, or gypsum.
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+Write code that computes the eigenRank of the "transpose" of the geologyRank.
+
+
+```{r}
+# -- INSERT CODE HERE --
+geologyRank.transpose = transposeMatrix(geologyRank)
+GRT = geologyRank %*% geologyRank.transpose
+geologyRankTranspose = matrix.computeEigenRank(geologyRank.transpose, "power", "max-100", pow=22);
+geologyRankTranspose;
+```
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Student Response (5 points)
+
+Which geology ranks the highest?  lowest?  why?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+geologyRank isn't square so the code doesn't work. I'm either trying to find the eigenRank of the wrong matrix, it's not supposed to be able to work, or I'm making some other error I can't figure out before the midterm is due. Since the code doesn't work, I have no idea which wll ranks the highest or lowest. My guess is that the highest and lowest 
+
+</pre>
+
+[This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Final Clustering (o-well)
+
+### Data Reduction Analysis (5 points)
+Let's look at just a few of the variables.  In the following order, build a dataframe `wells.final`:
+
+- well
+- lat.mi/lon.mi
+- altitude.mi
+- sea.mi
+- fault.mi
+- pH
+- SAR, Na.per, RSC
+- Wilcox.C / Wilcox.S
+- metalRank
+- chemistryRank
+- geologyRank
+
+```{r}
+# -- INSERT CODE HERE --
+wells.final = data.frame(well = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
+                         lat.mi = c(1972.238,1969.852,1967.952,1971.016,1966.899,1969.806,1961.922,1967.707,1958.482,1966.421,1973.149,1968.542,1963.563,1959.165,1971.397,1970.504,1965.492,2014.278,2013.367,2017.212,2020.364,2019.180,2014.039), 
+                         lon.mi=c(2111.874,2112.626,2114.710,2116.663,2123.526,2123.678
+,2122.727,2112.467,2111.179,2118.288,2116.648,2135.461,2121.533,2120.223,2127.226,2137.373,2128.107,2125.164,2122.291,2122.787,2123.032,2126.074,2135.392),
+                         altitude.mi=c(0.04867424,0.31287879,0.17500000,0.34375000,0.26666667,0.50000000,0.18106061,0.24848485,0.11268939,0.43390152,0.60000000,0.43693182,0.20625000,0.16363636,0.28295455,0.43257576,0.22102273,0.19545455,0.05284091,0.07632576,0.10454545,0.23579545,0.53617424), 
+                         sea.mi = c(0.6213712,1.2427424,3.4175416,4.9709695,11.8060527,11.8060527
+,10.5633103,1.2427424,2.1747992,6.8350831,5.9030263,23.6121053,9.3205679,9.9419391,15.5342798,25.4762189,15.5342798,4.0389127,1.2427424,0.9320568,1.2427424,4.3495983,13.6701662), 
+                         fault.mi = c(0.7456454,0.2485485,0.2485485,0.9320568,0.2485485,0.9320568,0.6213712,0.6835083,0.9941939,0.6835083,0.2485485,0.6835083,1.3048795,1.2427424,0.8077825,0.3728227,0.5592341,1.9883878,0.4970970,0.4349598,0.4970970,1.1806053,0.1242742), 
+                         pH = c(7.5,7.4,7.4,7.5,7.7,7.8,7.6,7.3,7.5,7.4,7.6,7.6,7.5,7.4,7.4,7.8,7.8,7.2,7.1,7.0,7.0,7.1,7.6),
+                         SAR = c(4.70,3.67,2.71,2.87,2.67,3.93,3.33,1.82,4.66,6.05,1.81,1.81,3.24,5.21,4.44,1.66,1.03,21.31,32.48,33.92,19.13,16.77,3.54),
+                         Na.per = c(43.74,38.68,27.82,30.38,30.52,34.55,32.70,23.09,43.05,48.77,26.12,26.07,31.32,39.63,37.51,22.98,18.04,74.34,82.08,77.40,77.23,66.53,41.44),
+                         RSC=c(-15.84,-15.50,-26.06,-19.97,-15.79,-25.37,-23.09,-17.84,-19.05,-18.46,-11.87,-11.47,-23.13,-29.70,-27.67,-13.71,-11.65,-25.68,-23.31,-47.59,-13.68,-34.33,-10.31),
+                         Wilcox.C=c(4,4,4,4,4,4,4,4,4,4,3,3,4,4,4,4,3,4,4,4,4,4,3),
+                         Wilcox.S=c(1,2,1,1,1,1,2,1,1,2,1,1,1,2,2,1,1,4,4,4,4,4,1),
+                         metalRank = c(40.23405,28.92530,42.00734,26.57670,26.19746,29.47842,25.12973,33.28577,26.02952,47.86170,31.53788,29.64482,50.95065,31.54732,36.14474,55.30780,38.03512,77.49204,87.24693,100.00000,64.58009,76.53091,26.67866), 
+                         chemistryRank=c(33.06127,31.19755,33.06925,32.03683,30.57289,33.85476,33.08856,29.34747,33.41892,33.22496,27.62277,26.98070,34.80677,41.06092,38.86120,28.30765,26.68699,63.83209,76.79481,100.00000,45.01111,63.71766,26.62582), 
+                         geologyRank=c(52.63068,100.0000,47.36899,42.10577,57.89572,36.84274,36.84238,42.10577,36.84238,36.84274,63.15876,36.84256,36.84238,36.84238,36.84274,84.21193,42.10562,52.63068,52.63068,52.63068,52.63068,52.63068,52.63068))
+```
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Correlation Analysis (10 points)
+
+Perform a correlation analysis on `wells.final`, print the correlation matrix, and visualize the results.  
+
+```{r}
+wells.final.cor = cor(wells.final,wells.final);
+print(wells.final.cor);
+
+```
+```{r}
+y = wells.final$pH
+x = wells.final$altitude.mi
+plot(x, y, main = "Scatterplot pH v. Altitude", xlab = "Altitude (mi)", ylab = "pH", asp = 1)
+```
+
+Describe in detail your findings.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Latitude had a strong positive correlation with SAR (r = 0.81), Na.per (r = 0.83), Wilcox.S (r = 0.799), metalRank (r = 0.75), and chemistryRank (r = 0.72). Latitude had a moderate positive correlation with longitude (r = 0.30). Latitude had a moderate negative correlation with sea.mi (r = -0.32) and RSC (r = -0.31) and a strong negative correlation with pH (r = -0.69).
+
+Longitude had a strong correlation with sea.mi (r = 0.80) and Wilcox.c (r = -0.42). Longitude also had a moderate correlation with altitude.mi (r = 0.37), pH (r = 0.24).
+
+Altitude correlated positively with sea.mi (r = 0.53), pH (r = 0.56), RSC (r = 0.44), and geologyRank (r = 0.15). Altitude correlated negatively with fault.mi (r = -0.25), SAR (r = -0.51), Wilcox.C, Wilcox.S, metalRank, and chemistryRank. 
+
+sea.mi correlated positively with pH and RSC, negatively correlating with fault.mi, SAR, Na.per, Wilcox.C, Wilcox.S, metalRank, chemistryRank, and geologyRank. 
+
+fault.mi positively correlated with SAR, Na.per, Wilcox.C, Wilcox.S, metalRank, and chemistryRank. fault.mi was negatively correlated with pH, RSC, and geologyRank. 
+
+pH was positively correlated with RSC and negatively correlated with SAR, Na.per, Wilcox.C, Wilcox.S, metalRank, and chemistryRank. 
+
+SAR was positively correlated Na.per, Wilcox.C, Wilcox.S, metalRank, and chemistryRank. SAR was negatively correlated with RSC. 
+
+Na.per was negatively correlated with RSC and positively correlated with Wilcox.C, Wilcox.S, metalRank, and chemistryRank.
+
+RSC was positively correlated with geologyRank and negatively correlated with Wilcox.C, Wilcox.S, metalRank, and chemistryRank.
+
+Wilcox.C was positively correlated with Wilcox.S (r = 0.34), metalRank (r = 0.29), and chemistryRank (r = 0.33). 
+
+Wilcox.S was positively correlated with metalRank (r = 0.84) and chemistryRank (r = 0.85).
+
+metalRank was positively correlated with chemistryRank (r = 0.89). 
+
+
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Final Clustering (15 points)
+
+Perform a final clustering using `wells.final` or any other subset you choose from `wells.df`.
+```{r}
+# -- INSERT CODE HERE --
+numberClusters = 3
+
+whichD2 = as.dist(wells.final[,c(4,5,6,7,8,9,10,13,14,15)]);
+x = as.matrix(wells.final[,c(4,5,6,7,8,9,10,13,14,15)])
+# whichx = transposeMatrix(x)
+x.d = dist(x)
+Final.hclust = hclust(x.d, method="complete");
+plot(Final.hclust, main="wells.final (complete)")
+```
+
+```{r}
+Final.hclust = hclust(x.d, method="ward.D2");
+plot(Final.hclust, main="wells.final (Ward.D2)")
+```
+
+
+Describe in detail your methods and findings.  What variables did you put into your final `hclust`?  Why? How many clusters did you choose?  Why?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+I tried clustering with a variety of amounts of variables (all of the variables, 2:10, 4:10, 2:15, 4:15) because I was having trouble getting the code to work and I wasn't sure if it was because of which variables I was including or not. I finally used altitude.mi, sea.mi, fault.mi, pH, SAR, Na.per, RSC, metalRank, chemistryRank, and geologyRank because those were the variables I was most interested in and I wanted to see how the wells would cluster without the influence of latitude and longitude. I used both "Ward.D2" and "complete" to get two views of the data. 
+
+There is some variation in the wells. Wells 2 and 16 look like they could be their own cluster, with 18-22 another cluster and the rest of the wells making up a third cluster. Looking at it again, the separation isn't all that dramatic so 2 and 16 could be part of the majority cluster, with wells 18-22 making a second cluster. 
+
+I picked 2 clusters because that's what look reasonable with the two hclust views. It looks like there's a big enough distance between the clusters to have 2 of them but not quite a big enough distance to justify wells 2 and 16 being their own cluster. So the two clusters would equal one with wells 18-22 and then all the other wells in another cluster.  
+
+</pre>
+
+[This is worth 15 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+# May I coach you?
+
+Providing a "411" based on my experiences and life perspectives give you an opportunity to see how I mix multivariate data into an informed opinion.  You don't have to agree with my opinion, but it gives you a look "under the hood" about how an opinion can be formed.
+
+- Good data analysis tries to remain objective
+- Good data analysis tries to see multiple perspectives 
+- Good data analysis tries to see multiple scales
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Situation
+
+The situation has been that a cluster of students were raising concerns about the lack of linearity in the course, that writing was required, that we have to use pen-to-paper notebooks, that we have to use R notebooks, that "nothing is being learned".
+
+- Are the concerns quantifiable?
+- How can you categorize them?
+- Is there an underlying "latent variable" associated with the complaints?
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Task
+
+My initial task was to try and make sense of what was going on. 
+
+### History
+Based on my teaching experience, when a student complains "behind the instructor's" back but not directly to the instructor, this is a signal that the "complaint" is a straw-man.  The root of the problem is that there are institutional segment-faults inherent to the learning environment.  
+
+Likely, some students may dislike the instructor based on one or more immutable characteristics but are searching/fishing/hunting for a justifiable reason.  These characteristics include:
+
+- The instructor is a white male with conservative values.
+- The instructor is a strong, sober mind that likes to solve problems in order to help people.
+- The instructor has a D-4 personality:  <https://myprofiletraits.com/report/monte_shaffer@wsu.edu/p-600a26a561e45/>
+- The instructor never has nor ever will "bow to the mob of mediocrity".
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Deep Self-reflection
+A good instructor should always be self-aware and review what is transpiring.  If there are pedagogical reasons the students are not learning, those should be carefully considered.  
+
+Since I have not taught at university for about 8 years, I decided to make certain I was reading the "tea leaves".  I asked the question "May I coach you?" and several of you volunteered feedback.  I listened carefully to your feedback and currently conclude:
+
+- Those with software-engineering as a background find the course straightforward, enjoyable, and a bit easy.
+- Those with some background in computer science (e.g., in the data analytics program) find the programming a bit challenging, but enjoy what they are learning as they see its potential application for their future.  They appreciate the digital notebooks.
+- A few with little programming experience after some significant up-front work, feel comfortable and confident in the process.  They feel "empowered" and "enabled" and see how it can benefit them in their current internships/jobs or in a potential future career in data analytics.
+
+These students would be typically classified as the "voiceless"; that is, they are not the type to "complain" but wanted to counter the "nebulous" voices with their perspectives.  They recognize:
+
+- The expectations of the course have been clearly outlined.
+- The intentional vaguities lead to potential creative outcomes.
+- The instructor is willing and able to offer assistance as needed.
+- As self-directed learners, if assistance is not needed, they begin working on their own.  
+- Some have never attended office hours.  Others have attended once to overcome a single technical hurdle.  Others have attended several times to "get" the protocols and have since attended less frequently.  And some attend office hours for "socializing".
+
+
+When asked about why others would claim "learning is not happening", they responded:
+
+- Maybe the students don't have the technical skills.
+- Maybe the students should ask for help.
+- Maybe the students should collaborate with their team members (maybe an "engineering" student should be put on each of the teams).
+- Students are "used to" ... [list of items that "commisserate" with possible reasons for complaints]
+
+Certainly there are a few things I identify as not perfect in my design.  The most obvious is that instead of doing the "longitudinal" direct feedback for my students at midterm and at the final, I should do it three times in the semester.  The concept of "fileting the salmon" instead of "steaking the salmon" is the reason I do grading the way I do.  It is intentional.  It places the focus on the student's evolution and progress.  And it downplays the importance of grades as it tries to "up-play" the importance of learning.
+
+My design is not perfect.  The implementation of my design is not perfect.  I am not perfect.  This is the essence of humanity.  We are not perfect, but intentions are fair, transparent, and consistent.
+
+Fundamentally, my self-determined approach is very foreign to students who have been systematically forced to comply to erroneous external controls their entire educational lives.  The early lecture and video from Ryan about "intrinsic motivation" was intended to help "wake up" students and let them know that regardless of their race, gender, or political affiliation:  (1) they have infinite worth, (2) they have infinite potential, (3) the limitations of their future is merely a solid educational foundation.
+
+Students yearn to feel that have infinite potential.  In an current skill assessment, I posed the question:  "Do you have a superpower?  If so, what is it?  If not, what would it be?"  This question I have asked all young people I have hired over the past few years.  The responses of this student group was very different that I have ever seen before.  Three themes came up: (a) students want to dilate or reverse time so they can get more done, (b) students want to fly or teleport to make transportation more efficient, (c) students want to communicate without having to use words.
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Is learning occuring?
+
+The short answer is YES.  Learning is occurring.  
+
+I am being told (albeit indirectly) that I should "dumb down the course" as it is "too much" or "too intense."  I listen to this suggestion, apply its correlation to the objective I have intentionally designed, and conclude that it does not align with my teaching philosophy or paradigm.
+
+<https://en.wikipedia.org/wiki/Blind_men_and_an_elephant#The_meaning_as_proverb_by_country_or_domain>
+
+If I "teach to the mediocre" average of the course, I am hindering the "outliers" that will be the innovators and creators of the future.  Preparing students for the real world is pushing them out of their comfort/expectation zone.  My design is intentional.  The consequence of this design principle is a bit of complaining.  
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Life energy and Karma
+
+In ancient traditions "karma" or "qi" refer to the state of a person's outlook regarding life energy.  Negative energy breeds negative energy and outcomes.  Likewise, positive energy breeds positive energy and outcomes.  
+
+One student last semester used very negative language (which we will analyze using multivariate techniques in the near future):  "I hate everything about this class.  The nonlinear approach drives me crazy.  It reminds me of my boss."
+
+This example demonstrates a person with some negative energy.  Often, we people feel like they have lost control of their lives ("locus of control"), they lash out at those that are trying to help them.  They try to "control" those helping.  Maybe a personal event in the student's life; maybe COVID in general.  Some of the reasons may be unknowable.  Regardless, negative energy begats negative energy.  
+
+That student has every right to express an opinion.  And be angry at the world.  That does not require me to absorb that negative energy or agree with that opinion.  As the student is self-determined, so am I.
+
+Albeit negative in tone, I am "listening for" how the feedback aligns with my primary objective.  
+
+Certainly negative energy interrupts my creative flow and stymies my productivity.  If all parties could accept their temporary roles as associated with this course and its expectations, more creative energy could be devoted to improving the tools/notebooks that I am developing for my students.
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### Being Present
+
+I believe in the concept of letting the river of life take you to the moment and being present therein.  I am grateful for this opportunity given many of the job openings vaporized with the arrival of "COVID."  And I took the opportunity to improve my R skills as I had some focused time to think about what "tools" can I leave my students based on my skillset.
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Current 411
+So what is my analysis of the problem?  I see it as a systematic problem.  I am just a cog in the system.  Through my intentional actions, I am exposing the flaws of the system.  
+
+
+### Titanic Metaphor
+We will apply the "official narrative" of the sinking of the Titanic to WSU.
+
+- The university was struck by an iceberg when the "west-side" liberals (regents) chose *NOT* to continue the legacy of Lane Rawlings. (I have never met Lane but learned that I replaced him as the Sunday School teacher in a Pullman religious community when I began my Ph.D. program in 2007.)  Lane spent nearly a decade trying to shift the image of WSU from the "party school WAZZU" to "world class - face to face".  The "heir apparent" was someone on his team that had the ability to keep that momentum moving forward, but political forces had a different agenda.  An as always:  choices have consequences.
+- The selected president within a week undid the "prepare students for the real world" agenda.  He literally called together a group of student-athletes (baseball team), spent 10 minutes with the students asking if we should just go back to the "party school WAZZU", and moved forward with that agenda.  One of my students was in the room and shared this personally to me.
+- University presidents have one job to do.  That job is to raise money.  Lazy university presidents seek opportunities to "micromanage" to avoid their primary responsibility.  And most of them rob money from some departments to cover this "shortfall".  At most universities, the "business" schools and the "math" departments get shorted.  Based on any measure of performance-based budgeting (the number of "butts in seats" in courses offered within a teaching unit), these departments should have ample budgets.
+- University leadership, generally the provost, puts the squeeze on these departments to do more with less.  As a result, hiring freezes occur, those reading the "winds of change" abandon ship, and the teaching quality suffers.  Then students get frustrated with the situation.  Then teaching regresses to the worst possible objective function:  "have the students 'perceive' they learned something so an instructor maximizes teacher ratings."  The lack of respect spins the tit-for-tat negativity in a downward spiral.  Over time, the students now drive the ship.  It's a sinking ship, but they are in control.
+- The current university president is trying to reestablish a standard of quality with his "drive for 25" initiative but without the financial resources, and with the current state of the university, it is a failing endeavor.  So to stay up-to-date and relevant, he tweets nonstop to show that he is "hip" with the youngsters and is "woke".  My perspective is that he means well, but he "bowed to mob" and now has to live this new, introjected self.  He himself also gets caught in precarious situations:  in one breath, he proclaims the math department has to cut deeper (another \$250,000).  In a second breadth, he says he got a loan from the NCAA to pay the football coaches (\$3M).  This drives faculty moral even lower.  You care about football, but not math.  A simplistic interpretation, but not altogether incorrect.
+- The biggest change I have seen is the GIRL-POWER movement.  This year, I have sat in several ZOOM meetings and notice I was the only caucasian on the call.  And often, the only male on the call.  The "legacy" generation of staff have been beyond kind and courtesy to me.  But that generation is retiring.  There have been times through facial expressions or verbal language, I have been belittled for my positions as "how could I know what the world demands."  Well, the answer is simple:  do market research and analyze the problem.  Simple "gender studies" will demonstrate this inequity in the hiring process across all university positions.  Other times, I am on a call with only MALE participants and the nature of the call shifts altogether.  These MEN who keep their opinions to themselves in the GIRL-POWER phone calls, do openly express themselves.  This suggests that they are well aware of the current climate of university life. 
+- The non-vocal conservative students, parents, and donors see through this "PR propaganda" and begin to abandon ship "Why would I pay to support a university that does not allow my voice to be heard?"  Enrollment is down this semester 20% and will continue to fall.  It is not about COVID.  It is a result of the systematic error in the system.  "Woke" politics meets "economic" realities.  It is only a matter of time. 
+
+This is not a WSU-only phenomenon.  It is a system-wide crisis in higher education.  The old systems are failing because in their "wokeness" they drove out the "academic equality" of the conservative class of citizens.
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### A New Hope
+The universities are collapsing under their own weight.  The idea of freedom of speech and inclusion is relevant if you speak words they approve of.  If you are white and conservative your voice is shunned and disdained.  
+
+- I see our course as a microcosm of the realities of the "polarized" world we live in.  The vocal "woke" crowd versus the "unspoken" voice of the conservatives.  There is a "swing group" that tries to bring harmony.  Several of you (my students) that talked with me had this mentality of trying to problem solve and find unity.  This is the beacon of hope.
+
+- I consider Jodie Foster.  A famous actor (actress) that has very liberal views.  In her youth, she was a vocal, liberal activist.  One of her crazed fans shot a sitting U.S. President.  She reflected and toned down her rhetoric.  She current lives her own self-determined lifestyle, which is her right and privilege as a member of the human race.  At some point, likely 1997 when the movie "Maverick" was filmed, she met Mel Gibson.  He can easily be defined as the policital opposite of Jodie.  Very conservative views.  Possibly extreme.  But this is the story of hope.  These two people have developed an amazing friendship.  They respect that they don't agree but can appreciate and learn from each other regardless.  
+
+- In one movie (1997 Contact), Jodie plays the part of a scientist.  During a selection process to become the first to travel to a distant star with intelligent life (which she discovered), for "political reasons" she is not selected.  She is not selected because she didn't say the politically correct words.  When challenged on the harsh realities of "political expedience", in the film, her character responds: "I thought the world is what we make of it."
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### True "wokeness"
+One day soon, this introjected "wokeness" will be replaced by a true "wokeness".  Jodie's and Mel's of the world will work together and build a new world.  A world that respects all of humanity.  A world of harmony.  A world of renewal.  And that revolution will start (as it always does) with the youth.  Consider the French Revolution of 1795.  Read "Les Miserable" or watch the play on Broadway, or even watch the Liam version of the movie.  
+
+Mel Gibson played a famous Scottish clansman "William Wallace" in the 1995 Braveheart.  Historically, the movie is a trainwreck.  But the themes of FREEDOM and LIBERTY reasonate with every citizen of humanity.  It is in our anthropological DNA as humans to be "LIBER" <https://en.wikipedia.org/wiki/Liber>, which is the root for the word "LIBERAL".  Can I be both conservative and liberal?  That seemingly perplexing conundrum is the foundation of this new hope.  If Mel Gibson and Jodie Foster can get along, can't we all?
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Concluding Remarks
+
+I personally seek positive outcomes.  I have a long-game temporal disposition.  I don't enjoy negative energy, but at times I am not afraid to listen to the negativity and assess why it is coming.  I cannot control anyone but myself.  I cannot control others or their perceptions.    
+
+As I shared before in the lecture "May I coach you", I am present because I care.  I care for all of my students.  I am no respecter of persons.  That means I try to treat each learner as an individual with INFINITE worth.  I seek to serve my students based on my understanding of what they NEED (which is not necessarily what they perceive they NEED).  I try to align with them on their path of self-discovery and ask them how I can help them become the best person they can be.  I likely have a slight internal bias.  I do tend to naturally gravitate to those defined as the "have nots" by the upper social stratification.
+
+I faced tragedy at a very young age.  And I embrace it.  It defines my humanity.  I went to bed hungry at times in my childhood.  It defines my humanity.  And I embrace it.  I worked hard in school as a student because I believed in the American dream.  I consider myself a self-directed, life-long learner and that framework has enabled me to create and innovate.  That is, I try to practice what I preach.  I have had many learning opportunities and appreciate each one.  Most especially, I appreciate those instructors that saw my intellectual talents and made individualized efforts to help refine them.  They shared a piece of their soul with me in their instruction, and that has enlarged my soul and enlightened my understanding.
+
+So my voice is calling for healing and honor and respect.  Respect for everyone.  Respect for all students.  And respect for the instructor as a learner/teacher that has designed this course with specific objectives.
+
+So again I ask "May I coach you?"
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## What's next
+First, I do apologize that I am focusing so much energy on this topic.  At this moment in time and space, I feel compelled that it needs to be addressed in a transparent way.  I am trying to be objective as a data analyst, but that is for you to decide.
+
+I have every intention to complete this semester based on the expectations I have outlined since the course began.  As a self-determined individual, I will fight for each student's right to have a voice.  
+
+I am here in this moment and must be present.  If "all voices" are to be heard, is not my voice as an instructor also relevant?  
+
+If THEY need a "sacrificial lamb", a "brilliant white goat" to continue ESCAPING from the inevitable future, so be it.  I would prefer to take accountability and responsibility for my own choices and actions.  
+
+THEY control many in this university through their tactics of fear and bullying.  I may stand alone, but I stand alone for my students.  All of my students.  Even those that may despise me and my teaching methods.  
+
+I stand for my dear math colleagues that have been shackled with this "woke" expectation:  comply or else.
+
+- My colleagues are academics.  They chose this profession because they like  to research and contribute to society in the safety of the "ivory tower".
+- My colleagues are of a different generation.  This idea of using digital notebooks and teaching statistics in such a technology-driven, applied way is  different from their traditional theoretical frameworks.  It is very foreign to them.  The language I use in class is foreign to them.  Everything I am doing is foreign to them.
+- My colleagues have only had leadership/management opportunities within the institutional forces of university.  In fact, many of these "service" roles are forced upon them as budgets are shrinking.
+
+THEY are harassing my "colleagues" in the math department unfairly.  My message is simple:  'I have a right to have a voice.  Stop bullying those that disagree with your opinions.  If you have concerns with me, bring those concerns directly to me.  Your bullying of my colleagues to get to me is both unprofessional and disingenuous.'
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+## Why we do what we do
+
+The book by Ryan/Deci called "Why we do what we do" I have purchased 8 times according to Amazon.  It is a gift I have shared with many people in my life.  Originally published August 1, 1996, this book discusses the importance of living a FREE and TRUE life:
+<https://www.amazon.com/Why-We-What-Understanding-Self-Motivation/dp/0140255265>
+
+I stand here for my son.  My son will forever know that his daddy believes and tries to practice every word that he teaches his son.  Whether it be a lesson about mathematics or a lesson about humanity.  I do ALL of this most especially for my son:  <https://ramblings.mshaffer.com/wp-content/uploads/2017/09/Alex-golf.jpg>
+
+I also do this for my daddy.  A man that instilled in my the principles of integrity, honor, and love for humanity.  He was my 7th/8th grade mathematics instructor and many of the "quirks" of my classroom are an evolution of my understanding of math learning that started so many years ago.  I am grateful that he exchanged easement rights of our property to Peter Tracy and the neighboring golf course for an amber-screen Intel-286 computer circa 1984.  What an important investment in my life.  He is the logician in my DNA and my mama was (is) the creative in my DNA.  I am 'Monte from Montana' because of them.
+
+## Tides of Change
+
+The system will naturally collapse, and a new system will emerge.  We will "one day" design that new system.  A system of true, authentic learning.  A system where the ancient wisdom of the "great nations" will be restored.  A system of all voices being heard, not just the echo chambers of one political viewpoint.  A system where my innovative teaching methods will be measured as worthy using meritocracy standards:  (1) is the instructor knowledgeable in the domain, (2) does the instructor have insights based on intellectual acumen or real-world experience, (3) can the instructor enable students to be self-directed learners so that they can become the "true" innovators of the future?
+
+It is a beautiful future, but it will not happen today.  We have to stand quietly in place without kneeling to the mob.  Let the negativity naturally dissolve away so we can build a new world.  Like a phoenix rising from the ashes.  Or a snake shedding its skin.  
+
+Finally, if THEY fire me for "insubordination", I will try and finish the semester by posting notebooks/videos for you (all of my students) outside this failing university system.  
+
+
+-- 
+
+
+monte
+
+{x:
+
+
+-----------------------------------
+Monte J. Shaffer
+Ph.D. Marketing
+M.S. Statistics
+M.B.A. Marketing Research
+B.A. Mathematics (minors Physics/Spanish)
+
+(509) 592-7592
+<monte.shaffer@gmail.com>
+<http://www.mshaffer.com/arizona/>
+
+# Quote and Reflection
+
+As today is 3/14 (which we call PI day), I felt like today's quote should belong to Albert Einstein, born March 14, 1879:  "Great spirits have always suffered violent opposition from mediocre minds."
+
+## Student Response (10 points)
+
+Please reflect on this "midterm" learning opportunity.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Midterms are a great way to determine whether a person's study habits are working and what needs adjusting. I can tell I need to focus better when I am studying and take better notes in class. I also need to work on my efficiency, especially when constructing dataframes. It takes too long and looks too messy to have to copy all the numbers into the dataframe setup. It would be nice if I could figure out a way to rearrange all the columns in an existing dataframe instead (when that works). I also need to pay more attention to why certain files are included in the dropbox folders and read files a little more completely so I don't spend a lot of time looking for things that already existed in an easy-to-find (if you looked for it) spot. I also recognize that in the future, I should write out the map of how I'm going to get everything done on Day 1 and not Day 3. With the RStudio format, it was easy to lose track of my progress without a written list to mark off completed midterm tasks. 
+
+Also, I am very glad this midterm is due at 11:59 pm and not 5:00 pm and I appreciate how it worked with my other classes to basically give me spring break so I could catch up on all my homework. 
+
+</pre>
+
+[This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct.]

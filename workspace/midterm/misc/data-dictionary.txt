@@ -1,0 +1,42 @@
+variable|property|units|description
+As|Arsenic|micrograms per liter|toxic element
+B|Boron|micrograms per liter|element harmful above 1 ppm
+Ba|Barium|micrograms per liter|toxic element
+Be|Beryllium|micrograms per liter|toxic element
+Cd|Cadmium|micrograms per liter|toxic element
+Co|Cobalt|micrograms per liter|element harmful at high levels
+Cr|Chromium|micrograms per liter|needed element
+Cu|Copper|micrograms per liter|needed element
+Fe|Iron|micrograms per liter|needed element
+Hg|Mercury|micrograms per liter|toxic element
+Mn|Manganese|micrograms per liter|needed element
+Mo|Molybdenum|micrograms per liter|needed element
+Pb|Lead|micrograms per liter|toxic element
+Se|Selenium|micrograms per liter|needed element
+Zn|Zinc|micrograms per liter|needed element
+pH|hydrogen|log scale|potential power of hydrogen
+Eh|electric|millivolts|redox potential
+TDS|solids|milligrams per liter|total dissolved solids
+Ca|Calcium|milligrams per liter|cation
+K|Potassium|milligrams per liter|cation
+Mg|Magnesium|milligrams per liter|cation
+Na|Sodium|milligrams per liter|cation
+HCO3|Bicarbonate|milligrams per liter|anion
+Cl|Chloride|milligrams per liter|anion
+SO4|Sulfate|milligrams per liter|anion
+NO3|Nitrate|milligrams per liter|anion
+F|Fluoride|milligrams per liter|anion
+PO4|Phosphate|milligrams per liter|anion
+TH|minerals|milligrams per liter|total hardness
+TA|acid|milligrams per liter|total alkalinity
+TS|solids|milligrams per liter|total solids
+SS|solids|milligrams per liter|suspended solids
+COD|oxygen|milligrams per liter|chemical oxygen demand
+BOD|oxygen|milligrams per liter|biological oxygen demand
+DO|oxygen|milligrams per liter|dissolved oxygen
+SAR|sodium|ratio|sodium adsorption ratio
+Na.per|sodium|percentage|sodium percentage
+RSC|sodium|milliequivalents per liter|residual sodium carbonate
+Wilcox|salt|C-S|Wilcox Classification of drinking water
+Wilcox.C|conductivity|microhmos per centimeter|Salinity hazard
+Wilcox.S|adsorption|ratio|Sodium hazard

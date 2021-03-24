@@ -315,6 +315,7 @@ cat("\n", "===============", "\n\n");
 
 [ What is the basic formula to convert `x` to `z` scores? ]
 
+(X-mean)/sd
 
 ### (quantiles) Standardize 
 
@@ -385,8 +386,8 @@ x.cut;  # not enough data
 We know that z goes from about [-3,3], let's break it up into 1/2 steps and build a summary table.
 
 ```{r}
-source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R");
-source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-stats.R");
+# source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R");
+# source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-stats.R");
 
 
 z = calculateZscores(x);

@@ -1,0 +1,127 @@
+---
+title: 'R Notebook sandbox: Playing with Correlation (owell)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+
+# Setup
+
+I will be using this data with all of its variables often, so I can place all those chunks in a "local" setup-well.R file and just include it.
+
+### source setup
+```{r}
+source("setup-owell.R");
+```
+
+We have lots of variables.  All of the above gets built automatically.  If we need to tweak something, we could tweak the one file above, and we may have 5 "personal workspace" notebooks that are accessing it.
+
+# Correlation
+
+Correlations are formed in a pair-wise manner, comparing a variable X to Y.
+
+```{r}
+names(wells.df);
+
+X = removeColumnsFromDataFrame(wells.df, c("geology", "Wilcox")); 
+                  # a matrix needs numbers.
+                  # remove other columns that are repeative or not interesting ?
+Xs = scale(X);
+
+options(digits = 3);
+X.cor = as.data.frame( cor(X) );
+X.cor;
+View(X.cor); # open in detached window
+```
+
+Notice we can now see relationships between the "geology" because the data is now numeric.
+
+## pH
+
+"At 25 °C, solutions with a pH less than 7 are acidic, and solutions with a pH greater than 7 are basic. Solutions with a pH of 7 at this temperature are neutral (e.g. pure water)."  <https://en.wikipedia.org/wiki/PH>
+
+Notice pH is a decimal "log10" scale.
+
+```{r}
+10^7; log10(10^7);
+```
+6.9 means more "basic" (having base) and 7.1 means more "acidic" (having acid).
+
+### pairwise correlations
+
+Default is "pearson" ... 
+```{r}
+# pH is 28 in my dataframe
+# names(X.cor);
+X.cor = as.data.frame( cor(X) );
+X.cor[,c(1,28)];
+
+```
+
+<https://sciencing.com/salt-affect-ph-water-5155101.html>
+
+Notice "Na" and its relationship it "pH" ... is that expected?
+
+What other interesting things do you notice?
+
+
+### Significance
+A hypothesis test can assess whether or not a correlation between two variables is "significant" with the given sample of data.  Recall, like most such tests, the size of the sample will influence the significance.  We have a smallish-small (n=23).
+```{r}
+# pH is 28 in my dataframe
+# names(X.cor);
+names(X.cor)[c(28,34)];
+cor.test( X[, 28], X[, 34] );  # a single test
+```
+
+#### Library Hmisc
+
+```{r}
+library(Hmisc); # install.packages("Hmisc");
+    rcorr(as.matrix(X), type="pearson");
+
+```
+
+TMI or TL;DR
+
+#### Visualizing
+```{r}
+library(corrgram); # install.packages("corrgram",dependencies=TRUE);
+    corrgram(X, 
+              order=TRUE, 
+              lower.panel=panel.shade,
+              upper.panel=panel.pie,
+              text.panel=panel.txt,
+              main="My title");
+
+
+```
+
+#### Causation vs Dependence
+
+
+
+Does zero correlation imply independence?
+
+```{r, chunck-correlation-causation}
+## Correlation does not imply causation 
+
+
+X = rnorm(100,0,1);
+  Y = ( X - mean(X) ) / sd(X);
+cor(X,Y);  ## Linear combinations
+
+  Y = X^2;
+cor(X,Y);  ## Non-linear relationship
+
+  Y = ( sample(X) - mean(X) ) / sd(X);
+cor(X,Y);  ## Randomized relationship [sample mixes up X ?]
+```
+

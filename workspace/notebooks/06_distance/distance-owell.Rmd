@@ -1,0 +1,358 @@
+---
+title: 'R Notebook sandbox: Playing with Distance (owell)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+
+# Setup
+
+## include-setup.R
+
+This one file has all the basic functions we need to load more functions.
+
+### source setup
+```{r}
+github.monte.raw = "https://raw.githubusercontent.com/MonteShaffer/";
+include.setup = paste0(github.monte.raw, "humanVerse/main/include.setup.R");
+source(include.setup);
+```
+
+### Custom Sourcing
+
+#### TEMP folder
+```{r}
+getSourceLocation();
+```
+
+#### source (humanVerse/R)
+```{r}
+github.monte.http = "https://github.com/MonteShaffer/";
+######## we will parse this page to get a list of the .R functions to include ########
+github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanVerse/R/"); 
+
+######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
+
+###### R::humanVerse #####
+includeGithubFolder(github.monte.humanVerse, force.download = TRUE); 
+```
+
+
+# Load O-well data
+
+## pipe with location - plus
+```{r}
+folder.owell = paste0(github.monte.raw, "humanVerse/main/data/o-well/");
+
+file.location = paste0(folder.owell, "wells-location-plus.txt");
+
+wells.pipe = readFromPipe(file.location);  
+
+wells.pipe = replaceFactorColumnWithIndicatorVariables(wells.pipe, "geology", use.boolean=FALSE);
+
+wells.pipe;
+
+```
+
+## data frames using dput
+
+```{r}
+
+file.location = paste0(folder.owell, "well-23.R");
+source(file.location);
+
+names(wells);
+
+# "sodium" is Table 6
+
+Wilcox = wells$sodium$Wilcox;
+Wilcox = str_replace("C","", Wilcox);
+Wilcox = str_replace("S","", Wilcox);
+tmp = explodeMe("-",Wilcox,NULL);
+Wilcox.C = as.numeric( getElementsInList(tmp, 1) ); 
+Wilcox.S = as.numeric( getElementsInList(tmp, 2) ); 
+
+wells$sodium$Wilcox.C = Wilcox.C;
+wells$sodium$Wilcox.S = Wilcox.S;
+
+wells;
+```
+
+## master data frame
+```{r}
+wells.df = wells.pipe;
+  wells.df = merge(wells.df, wells$metals, by="well");
+  wells.df = merge(wells.df, wells$chem, by="well");
+  wells.df = merge(wells.df, wells$sodium, by="well");
+
+dim(wells.df); 
+nrow(wells.df);
+ncol(wells.df);
+
+wells.df;  # do we have any variable collision?
+```
+
+
+# Physical Distance
+We have latitude and longitude.  Let's convert to a common form; e.g., miles:
+## Latitude and Longitude
+```{r}
+# https://gis.stackexchange.com/questions/142326/calculating-longitude-length-in-miles#:~:text=Each%20degree%20of%20latitude%20is,111.699%20km)%20at%20the%20poles.
+getMileMarkerFromLatitude = function(lat, factor=69)
+  {
+  # is there a formula that would figure this out? I could just linear extract
+  # https://gis.stackexchange.com/questions/110730/mercator-scale-factor-is-changed-along-the-meridians-as-a-function-of-latitude
+  # MERCATOR
+  factor.equator  = 68.703;
+  factor.poles    = 69.407;
+  
+  lat*factor;
+  }
+  
+
+library(pracma);
+getMileMarkerFromLongitude = function(long, lat, factor=69.172)
+  {
+  # https://gis.stackexchange.com/questions/142326/calculating-longitude-length-in-miles
+  
+  one = 1 / ( factor * cos(deg2rad(lat)) );  # this is one degree
+  long * one;
+  }
+
+wells.df$lat.mi = getMileMarkerFromLatitude(wells.df$latitude);
+wells.df$lon.mi = getMileMarkerFromLatitude(wells.df$longitude, wells.df$latitude);
+```
+
+This puts latitude and longitude coordinates in some "mile" grid.  Now let's convert the other units to miles.
+
+## Other variables to miles
+```{r}
+library(measurements); # install.packages("measurements");
+conv_unit(2.54, "cm", "inch");
+
+wells.df$altitude.mi = conv_unit(wells.df$altitude.ft, "ft", "mi");
+wells.df$sea.mi = conv_unit(wells.df$sea.m, "m", "mi");
+wells.df$fault.mi = conv_unit(wells.df$fault.m, "m", "mi");
+```
+
+We have lots of variables.  It is difficult to work with so many at once, but we can subset for specific analyses.  Notice our "units" are all in miles, so we could do comparisons.
+
+## Euclidean Distance
+
+Certainly the earth is not "Euclidean" as it has curvature, but we are in a local region, and curvature won't change the results much.  You can review notebook "distance.Rmd" for more information.  "Euclidean" is the primary engine of "statistical distance" in "multivariate analysis"; that is why we will focus on it.
+
+```{r}
+# create a "current-analysis" dataframe
+wells.sub = removeAllColumnsBut(wells.df, c("wells", "lat.mi", "lon.mi", "altitude.mi") );
+
+dim(wells.sub);
+wells.sub;
+```
+
+### Using only Latitude, Longitude
+
+
+```{r}
+X.dist = as.data.frame( as.matrix( round( dist(wells.sub[,1:2], method="euclidean", diag=TRUE, upper=FALSE), 3) ) );  
+
+# diag = TRUE, upper = FALSE makes this a full matrix
+# notice "rounding" doesn't improve "printing"
+
+# X.dist;
+# sprintf("%.3f", X.dist);
+# printMatrix(X.dist);
+
+options(digits = 3);
+  rownames(X.dist) = colnames(X.dist) = paste0("Well.", names(X.dist) );
+X.dist;
+```
+
+### Using Latitude, Longitude, Altitude
+
+
+```{r}
+X.dist = as.data.frame( as.matrix( round( dist(wells.sub[,1:3], method="euclidean", diag=TRUE, upper=FALSE), 3) ) );  
+
+  rownames(X.dist) = colnames(X.dist) = paste0("Well.", names(X.dist) );
+X.dist;
+```
+
+Did much change?
+
+Now you should always review the results and see if they are legitimate.  Using Google Earth, I find that the closer distances are reasonable, but the further distances are off.  As I get further away, my distance is more wrong.  It is likely in the Lat/Long to mile conversion.  [ Easter + 10 ]
+
+# Multivariate Distance (metals)
+
+Can we compute distances between variables of other types?  Of course.  Same rules apply.  You need to have similar "units" of measurement or they may be nonsensical.
+
+
+```{r}
+names(wells.df);  # As to Zn
+
+wells.sub = wells.df[, 14:28];  # get the indexes of the names
+                                # we want all rows, but these columns
+```
+### Euclidean distance
+Notice, I want all columns, so I didn't list any below.  I could have.
+```{r}
+X.dist = as.data.frame( as.matrix( round( dist(wells.sub[,], method="euclidean", diag=TRUE, upper=FALSE), 3) ) );  
+
+  rownames(X.dist) = colnames(X.dist) = paste0("Well.", names(X.dist) );
+X.dist;
+X.dist / max(X.dist); # scale to a common number [norm-max]
+```
+
+### Euclidean distance (scaled)
+I could "scale" the columns based on "z-scores" ... even though the UNITS are all the same, this scaling by columns means something different.  And it only applies to the sample of data we have; it is a "within-sample" z-score.
+
+```{r}
+Xs.dist = as.data.frame( as.matrix( round( dist( scale( wells.sub[,] ), method="euclidean", diag=TRUE, upper=FALSE), 3) ) );  
+
+  rownames(Xs.dist) = colnames(Xs.dist) = paste0("Well.", names(Xs.dist) );
+Xs.dist;
+Xs.dist / max(Xs.dist); # scale to a common number [norm-max]
+```
+
+### Comparison of Two options
+
+The relationship seems to be about the same.
+
+```{r}
+
+plot( as.numeric(X.dist[1,]), as.numeric(Xs.dist[1,])); # plot first row of each result
+
+```
+These represent "relative distances" from the focal well, in this case "WELL 1".
+
+```{r}
+
+plot( as.numeric(X.dist[1,]/max(X.dist)), as.numeric(Xs.dist[1,]/max(Xs.dist)) ); # plot first row of each result
+
+```
+
+Notice, the location of the points are in the same place, the scale is now standardized where 1.0 is the MAX.
+
+### Correlation X
+To genericize my code, I often use X for the raw matrix, and Xs for the scaled matrix.  I can copy and paste code (reusable).
+```{r}
+X = wells.sub[,];
+Xs = scale(X);
+
+
+options(scipen = 99);
+options(digits = 3);
+cor(X);
+```
+
+### Correlation Xs
+```{r}
+cor(Xs);
+```
+
+Are the correlations of X and Xs any different?  Why?
+
+Can you interpret a correlation.  The number value and its sign.  In this sample of wells, how does the amount of "Cu" (Copper) correlate to the amount of [INSERT OTHER METAL HERE].  
+
+<https://sciencenotes.org/list-metals/>
+
+Do you have a dictionary of the "acronyms" so you can interpret your results?
+
+### Correlation of "WELLS" based on other data.
+```{r}
+X = transposeMatrix(wells.sub[,]);
+Xs = scale(X);
+
+cor(X);
+
+```
+
+### Relationship
+Distance and Correlation are related, but not exactly the same.
+
+Compare <https://en.wikipedia.org/wiki/Correlation_and_dependence#Sample_correlation_coefficient> to <https://en.wikipedia.org/wiki/Euclidean_distance#Higher_dimensions>
+
+```{r}
+plot( as.numeric(Xs.dist[1,] / max(Xs.dist)), Xs[1,]);
+```
+Think about how the formulas are different.  And how that influences the results.
+
+# Multivariate Distance (chems)
+
+I did "metals", you do "chems" ... COPY/PASTE is your friend.
+
+
+
+# Multivariate "Similarity" (metals)
+
+Engines of comparison are all based on some difference.  Distance is one example.  Another example are similarity measurements.  We will talk about the vector relationship using "Cosine Similarity".  <https://en.wikipedia.org/wiki/Cosine_similarity#Definition>
+
+## Comparing "pH" to "Na" in the sample
+```{r}
+pH = wells.df$pH;
+Na = wells.df$Na;
+
+
+( cos.sim = .cosine.similarity(pH, Na) );
+```
+## Angular distance
+Similarity is "how close things are"... Distance is "how far things are" ... so we can put them on similar scales ...
+
+<https://en.wikipedia.org/wiki/Cosine_similarity#Angular_distance_and_similarity>
+
+```{r}
+.angular.distance = function(cos.sim, v.neg = FALSE)
+  {
+  if(v.neg)
+    {
+    1 * acos(cos.sim) / pi;  
+    } else  {
+            2 * acos(cos.sim) / pi; 
+            }
+  }
+
+.angular.distance(cos.sim);
+.angular.distance(cos.sim, TRUE);
+
+```
+
+
+## Comparing Wells across various variables in sample
+
+
+### Well 1 to Well 23
+```{r}
+# names(wells.df);
+cols = 14:28;  # "As" -> "Zn" (metals);
+
+# well-1 to well-23
+( cos.sim = .cosine.similarity( as.numeric(wells.df[1,cols]), as.numeric(wells.df[23,cols]) ) );
+
+.angular.distance(cos.sim);
+.angular.distance(cos.sim, TRUE);
+
+```
+
+### For loop
+
+```{r}
+cols = 14:28;
+
+for(i in 2:23)
+  {
+  cos.sim = .cosine.similarity( as.numeric(wells.df[1,cols]), as.numeric(wells.df[i,cols]) ) ;
+  ad1 = .angular.distance(cos.sim);
+  ad2 = .angular.distance(cos.sim, TRUE);
+  
+  cat("\n", "WELL #1 compared to WELL #", i, "... cos.sim: ", cos.sim, "\n\t\t\t ad1: ", ad1, "\n\t\t\t ad2: ", ad2, "\n"); 
+  }
+
+```
+
+
