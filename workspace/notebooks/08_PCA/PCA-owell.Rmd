@@ -1,0 +1,352 @@
+---
+title: 'R Notebook sandbox: Playing with Principal Components Analysis'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+
+
+# Setup
+
+I will be using this data with all of its variables often, so I can place all those chunks in a "local" setup-well.R file and just include it.
+
+### source setup
+```{r}
+source("setup-owell.R");
+```
+
+### o well
+```{r}
+options(digits = 4); # limit the matrix form
+str(wells.df);
+```
+
+### Default Group
+```{r}
+wells.df$Group = c(rep(1, 17), rep(2, 5), 3);
+```
+
+
+# Reviewing Bivariate Data
+
+
+## Bivariate Data
+
+```{r}
+library(mvnfast);
+
+n = 3000;
+mu = c(1,3); # centers for x,y
+Sigma = diag(c(2,23)); # variance for x,y
+
+set.seed(1222015);
+X = rmvn(n, mu, Sigma, ncores=1);  # this is parallelizability with cores
+                                      # ncores	... Number of cores used. The parallelization will take place only if OpenMP is supported.
+
+```
+
+We generated bivariate data with certain "normal features":  mu as "mean" and Sigma as "variance".
+
+```{r}
+xy.lim = c(min(X), max(X)); # square
+
+x = X[,1];
+y = X[,2];
+
+cor(x,y);
+```
+
+```{r}
+
+plot(X, pch=20, cex=0.25, 
+        xlim=xy.lim, ylim=xy.lim, xlab="x", ylab="y", main="Bivariate" );
+  abline(v=mean(X[,1]), col="red"); 
+  abline(h=mean(X[,2]), col="red");
+points(x=mean(X[,1]),y=mean(X[,2]), 
+          pch=21, col="red", cex=8);
+```
+
+```{r}
+print("################   X   ################");
+print(paste0("MEANS:    x = ",round(mean(X[,1]),3),
+                "       y = ",round(mean(X[,2]),3) ));
+
+print(paste0("VARIANCE: x = ",round(var(X[,1]),3),
+                "       y = ",round(var(X[,2]),3) ));
+```
+
+## Bivariate Data (scaled)
+
+```{r}
+Xs = scale(X);
+
+plot(Xs, pch=20, cex=0.25, xlab="x", ylab="y", main="Bivariate (scaled)", 
+        xlim=xy.lim, ylim=xy.lim );
+  abline(v=mean(Xs[,1]), col="blue");
+  abline(h=mean(Xs[,2]), col="blue");
+points(x=mean(Xs[,1]),y=mean(Xs[,2]), 
+          pch=21, col="blue", cex=8);
+```
+
+```{r}
+print("################   Xs   ################");
+print(paste0("MEANS:    x = ",round(mean(Xs[,1]),3),
+                "       y = ",round(mean(Xs[,2]),3) ));
+
+print(paste0("VARIANCE: x = ",round(var(Xs[,1]),3),
+                "       y = ",round(var(Xs[,2]),3) ));
+```
+
+
+```{r}
+plot(Xs, pch=20, cex=0.25, xlab="x", ylab="y", main="Bivariate (scaled)");
+  abline(v=mean(Xs[,1]), col="green");
+  abline(h=mean(Xs[,2]), col="green");
+points(x=mean(Xs[,1]),y=mean(Xs[,2]), 
+          pch=21, col="green", cex=8);
+```
+
+
+## Bivariate Data (rotated)
+
+```{r}
+library(pracma);
+phi = 60; # degrees to rotate the data
+
+x = X[,1];
+y = X[,2];
+cor(x,y);
+```
+
+```{r}
+
+XR = X; # let's manually rotate 60 ...
+
+XR[,1] = x * cos(deg2rad(phi)) - y * sin(deg2rad(phi));
+XR[,2] = x * sin(deg2rad(phi)) + y * cos(deg2rad(phi));
+
+cor(XR[,1],XR[,2]);
+# non-rotated form of doing it :: https://statisticsglobe.com/plot-in-r-example
+```
+
+
+
+```{r}
+xyr.lim = c(min(XR),max(XR));
+
+plot(XR, pch=20, cex=0.25, xlab="x", ylab="y", main="Bivariate (rotated)", 
+        xlim=xyr.lim, ylim=xyr.lim );
+  abline(v=mean(XR[,1]), col="red"); 
+  abline(h=mean(XR[,2]), col="red");
+points(x=mean(XR[,1]),y=mean(XR[,2]), 
+          pch=21, col="red", cex=8);
+```
+
+
+```{r}
+print("################   XR   ################");
+print(paste0("MEANS:    x = ",round(mean(XR[,1]),3),
+                "       y = ",round(mean(XR[,2]),3) ));
+
+print(paste0("VARIANCE: x = ",round(var(XR[,1]),3),
+                "       y = ",round(var(XR[,2]),3) ));
+```
+
+## Bivariate Data (rotated and scaled)
+
+
+```{r}
+XRs = scale(XR);
+
+plot(XRs, pch=20, cex=0.25,  xlab="x", ylab="y", main="Bivariate (rotated and scaled)", 
+        xlim=xyr.lim, ylim=xyr.lim );
+  abline(v=mean(XRs[,1]), col="blue");
+  abline(h=mean(XRs[,2]), col="blue");
+points(x=mean(XRs[,1]),y=mean(XRs[,2]), 
+          pch=21, col="blue", cex=8);
+
+```
+
+
+```{r}
+print("################   XRs   ################");
+print(paste0("MEANS:    x = ",round(mean(XRs[,1]),3),
+                "       y = ",round(mean(XRs[,2]),3) ));
+
+print(paste0("VARIANCE: x = ",round(var(XRs[,1]),3),
+                "       y = ",round(var(XRs[,2]),3) ));
+```
+
+
+```{r}
+plot(XRs, pch=20, cex=0.25, xlab="x", ylab="y", main="Bivariate (rotated and scaled)");
+  abline(v=mean(XRs[,1]), col="green");
+  abline(h=mean(XRs[,2]), col="green");
+points(x=mean(XRs[,1]),y=mean(XRs[,2]), 
+          pch=21, col="green", cex=8);
+
+
+```
+
+
+ 
+# 3-Dimensions
+
+```{r}
+n = 3000;
+mu = c(1,3,8); # centers for x,y
+Sigma = diag(c(2,23,13)); # variance for x,y
+X = rmvn(n, mu, Sigma, ncores=1);  # this is parallelizability with cores
+
+x = X[,1];
+y = X[,2];
+z = X[,3];
+```
+
+```{r}
+graphics::plot( as.data.frame(cbind(x,y,z)) );
+```
+
+
+
+```{r}
+xyz.lim = c(min(X), max(X)); # square
+
+library(scatterplot3d);
+scatterplot3d(X, xlim=xyz.lim, ylim=xyz.lim, zlim=xyz.lim, highlight.3d=FALSE, main="X - 3D Scatterplot", color="red" );
+
+```
+
+```{r}
+library(rgl); 
+# this is interactive, and will open in its own window
+plot3d(X, xlim=xyz.lim, ylim=xyz.lim, zlim=xyz.lim, main="X - 3D plot",col="red" );
+
+```
+
+
+
+# PCA (Principal Components Analysis)
+
+Google search: "PCA wiki" ... <https://en.wikipedia.org/wiki/Principal_component_analysis>
+
+Some people call this data reduction.  The eigenRank is true data reduction.  This is data re-orienting and focusing (in general) on the dimensions that explain the most variance of the data.
+
+## Linear Algebra: basis
+
+Mathematically, a n-dimensional space can be transformed using a variety of techniques that are mathematically equivalent.  This is the concept of a vector having a basis.
+
+So if I have 2-dimensional data, I can transform it into a new basis, still having 2-dimensions.
+
+And if I have 3-dimensional data, I can transform it into a new basis, still having 3-dimensions.
+
+...
+
+And if I have 7-dimensional data, I can transform it into a new basis, still having 7-dimensions.
+
+...
+
+And if I have n-dimensional data, I can transform it into a new basis, still having n-dimensions.
+
+## Applying to "o-well"
+```{r}
+metals = wells.df[,14:28];
+  rownames(metals) = wells.df$well;
+```
+
+We could do a bunch of pair-wise plots.
+
+```{r}
+dim(metals);
+```
+
+We have 15 variables, so like the handshake problem, there are only so many unique bivariate comparisons.
+
+Translations, scalings, and rotations are not changing the overall basis.  So we can perform such manipulations on the data, and have interpretable results.
+
+## PCA metals "o-well"
+```{r}
+Xs = scale(metals);
+```
+
+If we don't scale, the one dimension will outweigh another dimension.  This will create uninterpretable results.
+
+### princomp
+```{r}
+
+Xs.PCA = princomp(Xs);
+options(digits=3);
+summary(Xs.PCA);
+```
+
+### prcomp
+```{r}
+
+Xs.PCA = prcomp(Xs);
+options(digits=3);
+summary(Xs.PCA);
+```
+
+-- TODO --
+Why are there two functions?  Which is better.  Write a response here.
+
+The two functions represent two different methods for PCA. princomp uses spectral decomposition and prcomp uses SVD. SVD gives more accurate results, so it is better. 
+
+<http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/>
+
+
+```{r}
+PC1 = Xs.PCA$x[,1];
+PC2 = Xs.PCA$x[,2];
+PC3 = Xs.PCA$x[,3];
+```
+
+```{r}
+zeroIsh( cor(PC1,PC2) );
+```
+
+```{r}
+zeroIsh( cor(PC2,PC3) );
+```
+
+```{r}
+zeroIsh( cor(PC1,PC3) );
+```
+
+## What's going on?
+We have taken 15 dimensions and re-oriented them into 15 new dimensions that are "orthogonal" and explain the variance in a ranked fashion.  The first "component" explains the most variance; the second "component" explains the second-most variance; and so on.  When we link PCA to SVD, we will demonstrate they are mathematically equal based on a traditional eigenvector of a matrix.  (Recall: eigenRank was a unique type of eigenvector and should not be confused with the traditional eigenvector).
+
+### Variance Accounted For (VAF)
+
+The first dimension is selected to maximize explaining the data.  The proportion or percentage of variance explained for that dimension is reported (`% VAF`).
+
+The second dimension is selected to be orthogonal to the first dimension.  The proportion or percentage of variance explained for that dimension is reported (`% VAF`).  And the cumulative proportion or percentage of variance is also recorded (`C. % VAF`).
+
+The third dimension is selected to be orthogonal to the first and second dimension. The proportion or percentage of variance explained for that dimension is reported (`% VAF`).  And the cumulative proportion or percentage of variance is also recorded (`C. % VAF`).
+
+And, so on.
+
+
+### Traditional Data Reduction
+Many times, we just choose the first "n" dimensions of the total (in this case 15) and just utilize those for future analysis.  We will discuss reasonable "rules of thumbs" for dimension selection in the near future.
+
+
+### Transposing the Matrix X
+We could transpose the matrix X, scale that transpose, and perform PCA.  It would show variance accounted for at various dimensions for the "wells" based on metals not "metals" based on wells.  Think about how you would interpret such results.
+
+# Conclusion
+As we link PCA to SVD, we will be able to graph both rows and cols on a graphic of two re-oriented dimensions at a time.  Coming soon.
+
+# TODO
+- This is one of the most important concepts of multivariate statistics.  Take some time to review the details presented herein.  SVD, Factor Analysis, and other aspects of multivariate analysis are anchored to this engine.
+- Go to IMDB website, and see what variables would be useful in harvesting to answer the "Will Smith v Denzel Washington" Question.  Make a workspace, and begin documenting some of your ideas.  I will provide some code to show you how to download, harvest, and parse some of the data.  R is not the workhorse for this, so I will likely share the code I have written in PHP to do just this.  This C-based language is by far the fastest parsing language I have used.
+- Review the 'humanVerse' functions.  Spend at least one hour reviewing some of the functions I am providing.  It will make your lives easier as you try to manipulate dataframes, and so on.
+
+HAVE A NICE WEEKEND, SEE YOU ON TUESDAY.

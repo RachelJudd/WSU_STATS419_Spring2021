@@ -1,0 +1,92 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../00-latex-setup/report.tex
+  html_document:
+    
+    df_print: paged
+title: "Denzel Washington Consistently Displays Excellence in Acting"
+subtitle: ""
+author: 
+- name: "Rachel Judd"
+  affiliation: "Washington State University Vancouver"
+keywords: |
+     Denzel Washington;Will Smith; excellence in acting
+abstract: |
+  Denzel Washington is a better actor than Will Smith. This is seen through ratings, votes, millions of dollars earned, and the depth and breadth of genres acted in. In each of these categories, Washington displays consistency and excellence in acting.
+sectionnumberdepth: 3
+titleEndnotes: "ENDNOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 1
+titleTOC:  "TABLE OF CONTENTS"
+bibliography: ./../00-latex-setup/biblio/master.bib
+bibliostyle: ./../00-latex-setup/biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{figure}[!ht]
+ \label{fig:one-graphic}
+%% figures have hrule, tables have hline
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 15mm 0 15mm,clip,width=\textwidth]{figures/DWRatingPortrait.pdf} }
+	\end{center}
+	\hrule
+	  \vspace{2mm}
+	\caption{ \textbf{Denzel Washington's ratings are clustered in the higher end of the rating scale:} \newline \footnotesize{ This graph shows the frequency of ratings for Denzel Washington's movies.  \newline \newline  The lowest rating is 5.0 while the highest rating is 8.5, with a median of 6.85. }  }
+	\vspace{2mm}
+    \hrule
+\end{figure}
+
+
+
+\newpage
+\section{Introduction}
+\label{sec:intro}
+
+\doublespacing
+
+There are several ways to measure success as an actor, including votes, millions earned, ratings, metacritic ratings, and the breadth and depth of genres in which the actor has acted. The votes show how well-liked the actor's movies are, with more votes reflecting superior acting performance. The millions of dollars each movie earns is an important measure of an actor's success. Higher earnings reflect better performance. High ratings also reflect excellent acting. The ability to act in mulitiple genres demonstrates flexibility and high level of skill. 
+
+Denzel Washington has demonstrated excellence in acting through consistent ratings, high earnings, high numbers of votes, and a good depth and breadth of acting experience. In each of these dimensions, Washington has shown that he is superior to other actors such as Will Smith.
+
+
+\newpage
+\section{ Comparison to Will Smith}
+\label{sec:da}
+
+Denzel Washington acts in consistently longer films than Will Smith. The longest film Washington has acted in is 202 minutes, 45 minutes longer than Smith's longest film. The shortest film Washington has acted in is 60 minutes long, 13% longer than Smith's shortest film. Washington's median film length is 118 minutes, 11% longer than Smith's median film length.
+
+Washington's films have received higher ratings than Smith's. The lowest rating Washington has received is 5.0, which is 54% higher than Smith's lowest rating of 2.3. The highest rating Washington has received is 8.5 and he has a median rating of 6.85, 8% higher than Smith's median rating. These consistently high ratings show superior acting performance. 
+
+Washington's films have also received higher metacritic ratings than Smith's films. The lowest metacritic rating Washington has received is 30, 50% higher than Smith's lowest. The highest metacritic rating Washington has received is 79, a higher score than Smith's highest metacritic rating. Washington has a mean metacritic rating of 61, which is 15% higher than Smith's mean metacritic rating. 
+
+The lowest number of votes Washington's films have gotten is 330, 90% more than the lowest number of votes one of Smith's films has received (34 votes). The highest number of votes Washington's movies have earned is 383,980, with a median of 74,561. Smith's median number of votes is 56,408, 24% less than Washington's median. 
+
+The highest Washington's films have earned is 120.09 million dollars (standardized to 2000). The lowest one of his films has ever earned is 0.2766 million dollars, 95% more than the lowest Smith's films have earned. The median earnings of Washington's films is 52.45 million dollars, 6% more than the median of Smith's film's earnings. 
+
+Washington has acted in 16 different genres, compared to Smith's 18 genres. The majority (71%) of Washington's movies are drama, with crime the second most acted in genre at 34%. By specializing in drama and crime, Washington has been able to strengthen his performance in two specific genres while maintaining the versatility to act in many different genres. 
+
+  
+
+\section{ Conclusion}
+\label{sec:conclusion}
+
+The assessment of excellence in acting requires multiple measures including votes received, ratings, metacritic ratings, millions of dollars earned, and the depth and breadth of acting experience. These measures work together to show how well-liked the actor's movies are, the monetary value of these movies, and the actor's flexibility and height of skill. On each of these dimensions, Denzel Washington has shown himself superior to actors like Will Smith, consistently displaying excellence in acting. 
+
+
+
+
+
+
+

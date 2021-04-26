@@ -92,9 +92,8 @@ Describe how the instructor has designed this course.  Be certain to include a s
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
 
-The instructor has designed this course to give an overview of multivariate statistics, encouarage creativity, and help students become self-directed learners. []. The course is designed to move at the pace of actual data analysis jobs so students will be prepared to work at that pace after they graduate. This class is similar in design to university art classes, with the lack of grade feedback (except upon direct request) other than at midterms and finals. This test is similar to a criminal justice final, with lots of essay-type questions and days to finish it in. The timeframe for finishing assignments and exams is also similar to other math classes. This class is different from university art classes because in art, we had to review everyone else's projects and provide our own feedback to them, and in this class we don't have to do that. This class is also different from criminal justice classes because there are more assignments with less weight (usually, 200 points is half of the grade in the class) and we have more time for takehome exams. 
+The instructor has designed this course to give an overview of multivariate statistics, encouarage creativity, and help students become self-directed learners. The objectives are for students to have an introduction to important statistical methods, have students be able to apply the methods, communicate well, make sound decisions based on data, and gain skills in data analysis. The course is designed to move at the pace of actual data analysis jobs so students will be prepared to work at that pace after they graduate. This class is similar in design to university art classes, with the lack of grade feedback (except upon direct request) other than at midterms and finals. This test is similar to a criminal justice final, with lots of essay-type questions and days to finish it in. The timeframe for finishing assignments and exams is also similar to other math classes. This class is different from university art classes because in art, we had to review everyone else's projects and provide our own feedback to them, and in this class we don't have to do that. This class is also different from criminal justice classes because there are more assignments with less weight (usually, 200 points is half of the grade in the class) and we have more time for takehome exams. 
 
--- WRITE SOMETHING HERE --
 </pre>
 
 [This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
@@ -178,11 +177,10 @@ text(1.14* (1:5), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, ad
 
 University Tradition: Data collection and presentation is traditionally taught in research methods classes, not the strictly statistics classes. In these research methods classes, emphasis is placed on ethical and proper collection/sampling techniques so when the students start working in the field they will know how to ethically collect data without skewing the results. In the strictly statistics classes, there is some presentation (mostly how to write the results of a hypothesis test like it's in an APA style journal article) and the rest of the time is devoted to analyzing the data and interpreting the results. Data organization (in my classes, if it was covered, it wasn't called by such terms) is a very small portion of the class, and most of it is done by the instructor or TAs so the students can do the rest of the things easier/faster. 
 
-Instructor Protocol: Since in class, the instructor mentioned refusing to work with bad data, data collection must be important. Since we've had to extract data and make it readable in assignments, data organization/cleaning is important. Because "one graphic" is a theme of the class, presentation is also important. 
+Instructor Protocol: Since in class, the instructor mentioned refusing to work with bad data, data collection must be important. Since we've had to extract data and make it readable in assignments, data organization/cleaning is important. Since we have to think about what we're doing and why we're doing it when we are analyzing and interpreting the data, analysis and interpretation are important too. Because "one graphic" is a theme of the class, presentation is also important. 
 
 Personal Belief: If we are to work in statistics, we should know how to do each of the five factors. We need to know how to collect data so we have data to work with and are able to evaluate how good the data is. We don't want to skew the results of the analysis because we made an error in the data collection. We need to know how to organize the data so we don't get lost and miss important details and also to make it easier to find the things we are interested in. We need to know how to analyze the data to find the answers to our questions of the data. We also need to know how to interpret the results so we don't give incorrect recommendations to people. We also need to know how to present our findings to clearly communicate the results so people can make informed decisions. Without a good foundation in the data collection, there's no point in organizing, analyzing, interpreting, or presenting the results because the data itself is flawed and can only lead to flawed conclusions. Without presentation, any interpretation of the data is meaningless because it won't help anyone if no one ever gets to hear the results. 
 
--- WRITE SOMETHING HERE --
 </pre>
 
 [The entire question is worth 10 points, including the 3 visualizations.  Describe how you arrived at the proportions for each:  university tradition, instructor protocol, your personal belief.]
@@ -216,10 +214,10 @@ Process the above information and write a response expressing your opinion about
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
 
-To learn something, you definitely have to do it. You could read a book on riding horses, watch people ride horses all day, understand and remember everything, and still be absolutely horrible at riding when you try it yourself. 
+To learn something, you definitely have to do it. You could read a book on riding horses, watch people ride horses all day, and still be absolutely horrible at riding when you try it yourself. The same thing applies to math. You can read the textbook, listen to the lecture, watch people solve problems, but until you try it yourself, you don't fully understand how to do it.  
 You also have to pay attention to what you're doing and fix mistakes because otherwise you will continue to make the same mistake over and over again, never learning the correct way to do things. Then the wrong way will become a habit and it will be even harder to learn the correct way. 
+Also, according to psychology, there is a such thing as latent learning, where it seems like no learning is occuring but then all of a sudden, it happens. There was a study with rats in mazes and the rats who were the slowest originally became the fastest once they started finishing the maze. Perhaps they explored all of the incorrect ways of doing things so they had the knowledge and confidence to go the correct way every time because they knew where the other paths led. 
 
--- WRITE SOMETHING HERE --
 </pre>
 
 [This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
@@ -235,17 +233,17 @@ Utilizing details specific to the Ryan/Deci explanation of self-determination th
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
 
-If you're your own boss, then you would have to be intrinsically motivated to get anything done because there wouldn't be external rewards/punishments. 
+If you're your own boss, then you would have to be intrinsically motivated to get anything done because there wouldn't be external rewards/punishments. Without external pressure and with no intrinsic motivation, it would be easy to put off tasks. 
 
-People with an E-5 personality would likely be instrinsically motivated to talk to people. [].
+People with an E-5 personality would likely be instrinsically motivated to talk to people. 
 
-People with a D-5 personality would likely be instrinsically motivated to [].
+People with a D-5 personality would likely be instrinsically motivated to think things through thoroughly.
 
 People with an C-1 personality would likely be intrinsically motivated to follow the rules and do the right thing, not needing external controls like speeding tickets and arrests to keep them in line. 
 
-People with a D-1 personality would likely be intrinsically motivated to [].
+People with a D-1 personality would likely be intrinsically motivated to do things creatively.
 
--- WRITE SOMETHING HERE --
+
 </pre>
 
 [This is worth 10 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
@@ -416,8 +414,8 @@ prop2 = do.call(rbind, dp);
 
 ```{r}
 barplot(myMatrix1, names.arg=(rownames(dp)), cex.names=0.78, cex.axis=0.9, beside = TRUE, ylim = c(0,0.14),axisnames=TRUE, axis.lty=1, las=2, legend.text = colnames(dp), xlab="Alphabet Count", ylab="Proportion");
-text(seq(1.5, en), par("usr")[3]-0.25, 
-     srt = 45, adj = 1, xpd = TRUE)
+# text(seq(1.5, en), par("usr")[3]-0.25, 
+#      srt = 45, adj = 1, xpd = TRUE)
 ```
 
 
@@ -538,7 +536,7 @@ In summary, what are some key aspects of the standarized percentiles?  When and 
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
 
-Some key aspects about standardized percentiles are that scores are compared to a reference group. Percentiles on standardized tests can change across years. We should compare percentiles across samples when [].A percentile shows more about how well a person did in comparison to others than an average score. An average score doesn't really show outliers (although outliers can affect it), but percentiles show the outliers. 
+Some key aspects about standardized percentiles are that scores are compared to a reference group. Percentiles on standardized tests can change across years. We can compare percentiles across samples when the means and standard deviations are the same or when we standardize the samples so they then have the same mean and standard deviation (like z-scores). A percentile shows more about how well a person did in comparison to others than an average score. An average score doesn't really show outliers (although outliers can affect it), but percentiles show the outliers. 
 
 </pre>
 
@@ -771,7 +769,7 @@ If you run two different approaches and reach the same answer, you can be a litt
 
 Select how many clusters you think are in the data based on "longitude" and "latitude".
 ```{r}
-numberClusters = 1;
+numberClusters = 2;
 ```
 
 <HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
@@ -822,7 +820,6 @@ Does the correlation surprise you?
 
 The correlation was in the same direction and on the same side of 0.5 as I was expecting. I was surprised it wasn't a stronger correlation. 
 
--- WRITE SOMETHING HERE --
 </pre>
 
 [This is worth 5 points.  Length of the response should demonstrate your understanding of mastery.  Too verbose is better than too succinct and references to "lecture" concepts or examples is a demonstration of mastery.]
@@ -991,7 +988,7 @@ Which geology ranks the highest?  lowest?  why?
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
 
-geologyRank isn't square so the code doesn't work. I'm either trying to find the eigenRank of the wrong matrix, it's not supposed to be able to work, or I'm making some other error I can't figure out before the midterm is due. Since the code doesn't work, I have no idea which wll ranks the highest or lowest. My guess is that the highest and lowest 
+geologyRank isn't square so the code doesn't work. I'm either trying to find the eigenRank of the wrong matrix, it's not supposed to be able to work, or I'm making some other error I can't figure out before the midterm is due. Since the code doesn't work, I have no idea which wll ranks the highest or lowest. My guess is that the highest and lowest would be the same if it behaved like the chemistryRanks. 
 
 </pre>
 

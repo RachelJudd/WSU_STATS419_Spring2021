@@ -1,0 +1,262 @@
+---
+title: "data-intro"
+author: Rachel Judd [rachel.judd]
+output: html_notebook
+---
+# Setup
+```{r}
+library(devtools);
+install_github("MonteShaffer/imdb/imdb");
+library(imdb);
+?loadDataIMDB
+```
+
+```{r}
+# install.packages("D:/R-Data/humanVerseWSU/humanVerseWSU_0.1.4.zip", repos = NULL, type = "source");
+# library(humanVerseWSU);
+# install.packages("D:/R-Data/IMDB/imdb_0.1.1.zip", repos=NULL, type="source");
+# library(imdb)
+```
+
+```{r}
+loadDataIMDB();  # will populate a global list of data:  imdb.data
+```
+
+
+# Will Smith
+```{r}
+IMDB.searchPersonName("Will* Smith", 1:3);
+```
+
+```{r}
+will = list();
+will$nmid = "nm0000226"
+```
+
+```{r}
+will$movies = IMDB.getMoviesForPerson(will$nmid);
+will$ttids = will$movies$ttid
+
+```
+
+```{r}
+loadInflationData()
+```
+
+```{r}
+will$movies = standardizeDollarsInDataFrame(will$movies, 2000, "millions", "year","millions2000")
+will$movies = replaceFactorColumnWithIndicatorVariables(will$movies, "genre", use.boolean = FALSE)
+```
+
+```{r}
+summary(will$movies[["rank"]]);
+boxplot(will$movies[["rank"]]);
+```
+
+```{r}
+summary(will$movies[["year"]]);
+boxplot(will$movies[["year"]]);
+```
+
+```{r}
+
+summary(will$movies[["minutes"]]);
+boxplot(will$movies[["minutes"]]);
+```
+
+```{r}
+summary(will$movies[["ratings"]]);
+boxplot(will$movies[["ratings"]]);
+```
+
+```{r}
+summary(will$movies[["metacritic"]]);
+boxplot(will$movies[["metacritic"]]);
+```
+
+```{r}
+summary(will$movies[["votes"]]);
+boxplot(will$movies[["votes"]]);
+```
+
+```{r}
+summary(will$movies[["millions"]]);
+boxplot(will$movies[["millions"]]);
+```
+
+```{r}
+summary(will$movies[["millions2000"]]);
+boxplot(will$movies[["millions2000"]]);
+
+# summary(will$movies[["rank"]])
+# boxplot(will$movies)
+```
+The filter functions used below came from these links:
+<https://github.com/peytonurquhart/WSU_STAT_419/blob/main/functions/functions-imdb.R>
+<https://github.com/peytonurquhart/WSU_STAT_419/blob/main/imdb/data-intro.Rmd>
+```{r}
+# na.omit(will$movies)
+filterBy = function(df, col, lambda)
+{
+  first = TRUE;
+  ndf = NULL;
+  
+  for(i in 1:nrow(df))
+  {
+    if(lambda(df[i,col]) == TRUE)
+    {
+      if (first)
+      {
+        ndf <- df[c(i),];
+        first = FALSE;
+      } else {
+        ndf <- rbind(ndf, df[c(i), ]);
+      }
+    }
+  }
+  return(ndf);
+}
+
+filterOutMissingValues = function(df, col)
+{
+  return(filterBy(df, col, (function(x) {!(is.na(x))})))
+}
+
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+   
+};
+```
+
+```{r}
+
+will.minusNA = filterOutMissingValues(will$movies, 26);
+v = will.minusNA[["rated"]]
+getmode(v);
+# print(getmode(v));
+```
+```{r}
+will.minusNA = filterOutMissingValues(will$movies, 4);
+v = will.minusNA[["year"]]
+getmode(v);
+```
+```{r}
+will.minusNA = filterOutMissingValues(will$movies, 6);
+v = will.minusNA[["genre"]]
+getmode(v);
+```
+```{r}
+will.minusNA = filterOutMissingValues(will$movies, 27);
+v = will.minusNA[["ratings"]]
+getmode(v);
+```
+```{r}
+will.minusNA = filterOutMissingValues(will$movies, 28);
+v = will.minusNA[["metacritic"]]
+getmode(v);
+```
+
+
+# Denzel Washington
+```{r}
+IMDB.searchPersonName("Denzel Washington", 1:3);
+```
+
+```{r}
+
+denzel = list();
+denzel$nmid = "nm0000243"
+
+denzel$movies = IMDB.getMoviesForPerson(denzel$nmid);
+denzel$ttids = denzel$movies$ttid
+denzel$movies =  standardizeDollarsInDataFrame(denzel$movies, 2000, "millions", "year","millions2000")
+denzel$movies = replaceFactorColumnWithIndicatorVariables(denzel$movies, "genre", use.boolean = FALSE)
+```
+
+```{r}
+summary(denzel$movies[["rank"]]);
+boxplot(denzel$movies[["rank"]]);
+```
+
+```{r}
+summary(denzel$movies[["year"]]);
+boxplot(denzel$movies[["year"]]);
+```
+
+```{r}
+
+summary(denzel$movies[["minutes"]]);
+boxplot(denzel$movies[["minutes"]]);
+```
+
+```{r}
+summary(denzel$movies[["ratings"]]);
+boxplot(denzel$movies[["ratings"]]);
+```
+
+```{r}
+summary(denzel$movies[["metacritic"]]);
+boxplot(denzel$movies[["metacritic"]]);
+```
+
+```{r}
+summary(denzel$movies[["votes"]]);
+boxplot(denzel$movies[["votes"]]);
+```
+
+```{r}
+summary(denzel$movies[["millions"]]);
+boxplot(denzel$movies[["millions"]]);
+```
+
+```{r}
+summary(denzel$movies[["millions2000"]]);
+boxplot(denzel$movies[["millions2000"]]);
+```
+
+```{r}
+
+denzel.minusNA = filterOutMissingValues(denzel$movies, 24);
+v = denzel.minusNA[["rated"]]
+getmode(v);
+# print(getmode(v));
+```
+
+```{r}
+denzel.minusNA = filterOutMissingValues(denzel$movies, 4);
+v = denzel.minusNA[["year"]]
+getmode(v);
+```
+
+```{r}
+denzel.minusNA = filterOutMissingValues(denzel$movies, 6);
+v = denzel.minusNA[["genre"]]
+getmode(v);
+```
+
+```{r}
+denzel.minusNA = filterOutMissingValues(denzel$movies, 25);
+v = denzel.minusNA[["ratings"]]
+getmode(v);
+```
+
+```{r}
+denzel.minusNA = filterOutMissingValues(denzel$movies, 26);
+v = denzel.minusNA[["metacritic"]]
+getmode(v);
+```
+
+# Did Will Smith and Denzel Washington work together?
+```{r}
+intersect(denzel$ttids, will$ttids)
+```
+<https://www.imdb.com/title/tt1546668/>
+```{r}
+info = subset(imdb.data$movies.df$info,ttid == "tt1546668")
+```
+Since the movie that they have in common is a documentary, it is likely that Will Smith and Denzel Washington did not actually work together. 
+
+```{r}
+# loadInflationData()
+```

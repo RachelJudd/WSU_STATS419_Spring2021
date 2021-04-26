@@ -1,0 +1,85 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../00-latex-setup/report.tex
+  html_document:
+    
+    df_print: paged
+title: "Will Smith Exemplifies Excellence in Acting"
+subtitle: ""
+author: 
+- name: "Rachel Judd"
+  affiliation: "Washington State University Vancouver"
+keywords: |
+    Will Smith; Denzel Washington; excellence in acting
+abstract: |
+  Will Smith is a better actor than Denzel Washington. This is seen through how many millions of dollars his movies earned, how short a time he has taken to reach his level of success, the height of his ratings, the variety of genres he has acted in, and the amount of votes his movies have received. 
+sectionnumberdepth: 3
+titleEndnotes: "ENDNOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 1
+titleTOC:  "TABLE OF CONTENTS"
+bibliography: ./../00-latex-setup/biblio/master.bib
+bibliostyle: ./../00-latex-setup/biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{figure}[!ht]
+ \label{fig:one-graphic}
+%% figures have hrule, tables have hline
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 50mm 0 5mm,clip,width=\textwidth]{figures/will=better-sd-millions2000.pdf} }
+	\end{center}
+	\hrule
+	  \vspace{2mm}
+	\caption{ \textbf{Will Smith's movies have earned more than those of Denzel Washington:} \newline \footnotesize{ This graph shows the millions of dollars earned for both Will Smith's movies and for Denzel Washington's movies.  \newline \newline  The dollar amounts were standardized to avoid the influence of inflation. The amount was scaled to what the amount would be in the year 2000. }  }
+	\vspace{2mm}
+    \hrule
+\end{figure}
+
+\section{Introduction}
+\label{sec:intro}
+
+\doublespacing
+
+There are several ways to measure success as an actor, including votes, millions earned, ratings, and the number of genres in which the actor has acted. The votes show how well-liked the actor's movies are, with more votes reflecting superior acting performance. The millions of dollars each movie earns is an important measure of an actor's success. Higher earnings reflect better performance. The earnings for the excellent actor's movies will accumulate faster than the earnings for a less successful actor. High ratings also reflect excellent acting. The number of genres acted in is another valuable measure of excellence in acting. The ability to act in mulitiple genres demonstrates flexibility and a higher level of skill than just acting in one genre. 
+
+Will Smith has demonstrated excellence in acting through his high ratings, high number of votes, the millions of dollars his movies have earned, and his versatility in the genres in which he can act. On these dimensions, he has shown that he is a superior to other actors, such as Denzel Washington.  
+
+
+\newpage
+\section{ Comparison to Denzel Washington}
+\label{sec:da}
+
+Will Smith has outperfomred Denzel Washington in a variety of measures of excellence. The most votes Smith has received for a film is 675,160, 43% more than Washington's maximum amount of votes (383,980). Smith's average amount of votes is 131,488, which is 18467 votes more than Washington's average amount of votes. 
+
+The millions of dollars Smith's movies have earned (standardized to the year 2000) also show Smith's acting excellence. The highest one of Smith's movies has earned is 336.026 million dollars, 64% more than the highest a Denzel Washington movie has earned. Smith's mean earnings are also 40% more than that of Washington, at 81.87 million dollars. Smith's movies have earned a total of 4,256.99 million dollars, which he earned in only 29 years, compared to Washington's 2,340.43 million dollar earnings in 40 years. These high earnings in such a short period of time show Smith's excellence in acting. 
+ 
+Smith's films have also received higher ratings than Washington's. The highest rating Smith has received is 8.6, with a median rating of 6.3. These high ratings show superior acting performance. 
+
+Smith is also a more versatile actor than Washington. Smith has acted in 18 different genres, 11% more than Washington. Smith has acted in more movies in the genres of action, adventure, animation, comedy, documentary, drama, family, fantasy, musical romance, and sci-fi than Washington has, with a maximum difference of 87%. 
+
+  
+
+\section{ Conclusion}
+\label{sec:conclusion}
+
+The assessment of excellence in acting requires multiple measures including votes received, ratings, millions of dollars earned, the amount of time it took to accumulate those earnings, and the number of genres acted in. These measures work together to show how well-liked the actor's movies are, the monetary value of these movies, and the actor's versatiliy. On each of these dimensions, Will Smith has shown himself superior to actors like Denzel Washington, exemplifying excellence in acting. 
+
+
+
+
+
+
+

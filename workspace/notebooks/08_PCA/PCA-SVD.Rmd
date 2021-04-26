@@ -1,0 +1,389 @@
+---
+title: 'R Notebook sandbox: PCA and SVD'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+
+
+# Setup
+
+I will be using this data with all of its variables often, so I can place all those chunks in a "local" setup-well.R file and just include it.
+
+### source setup
+```{r}
+source("setup-owell.R");
+```
+
+### o well
+```{r}
+options(digits = 4); # limit the matrix form
+str(wells.df);
+```
+
+### Default Group
+```{r}
+wells.df$Group = c(rep(1, 17), rep(2, 5), 3);
+```
+
+
+# (Maths) PCA
+
+## Review of PCA (metals)
+```{r}
+metals = wells.df[,14:28];
+  rownames(metals) = wells.df$well;
+Xs = scale(metals);
+Xs.PCA = prcomp(Xs);
+options(digits=3);
+summary(Xs.PCA);
+```
+
+```{r}
+str(Xs.PCA);
+```
+
+```{r}
+dim(Xs);
+```
+
+```{r}
+dim(Xs.PCA$x);
+```
+
+
+## Some Maths
+
+```{r}
+cov(Xs);
+```
+
+```{r}
+cor(Xs)
+```
+
+Since we have scaled the data, they are equivalent.  
+
+Mathematically we can compute this as `S`.
+
+```{r}
+n = 23; # number of wells
+S = ( transposeMatrix(as.matrix(Xs)) %*% as.matrix(Xs)) / (n-1);
+S;
+```
+
+### Eigenvalues of a Matrix
+
+Recall in Linear Algebra $$ det(\lambda I - X) = 0 $$ for a square matrix $X$ with dimensions of $n \times n$.  The vector $\lambda$ are the eigenvalues of the matrix.
+
+```{r}
+S.eigen = eigen(S);
+S.eigen;
+```
+
+
+
+
+```{r}
+Lambda = S.eigen$values;
+Lambda;
+```
+
+```{r}
+length(Lambda);
+```
+
+This was how many features or "metals" we have.
+
+```{r}
+round( det(S - diag(Lambda)), digits=4);
+```
+
+Why should the above be zero exactly.  Why isn't it "exactly" zero?
+
+### Eigenvectors of a Matrix
+```{r}
+W = S.eigen$vectors;  # orthogonal unit vectors
+dim(W);
+```
+
+
+```{r}
+T = Xs %*% W;
+dim(T);
+```
+
+The transpose of $W$ is sometimes called the whitening or sphering transformation.  <https://en.wikipedia.org/wiki/Whitening_transformation>
+
+```{r}
+transposeMatrix(W);
+```
+
+If we multiply $W$ by its transpose, we get:
+```{r}
+zeroIsh( W %*% transposeMatrix(W) );
+```
+We call this an orthogonal or orthonormal matrix. <https://en.wikipedia.org/wiki/Orthogonal_matrix>
+
+### Manual Construction of PCA
+We can manually construct PCA from these MATHS.
+
+```{r}
+D = diag(Lambda);
+D;
+```
+
+```{r}
+D.sqrt = diag(sqrt(D));
+D.sqrt;
+```
+
+
+```{r}
+Xs.PCA$sdev;
+```
+
+
+```{r}
+sum(D.sqrt);
+```
+
+```{r}
+matrixTrace(D.sqrt);
+```
+
+
+```{r}
+F = as.matrix(W) %*% D.sqrt;
+dim(F);
+```
+
+
+```{r}
+Z = ( W %*% D %*% transposeMatrix(W) );  # (n-1) is built into each component ...
+dim(Z);
+```
+
+```{r}
+isClose(S, Z);
+```
+
+### Variance Accounted For
+
+```{r}
+matrixTrace(S);
+```
+
+There are 15 features or "metals".
+
+```{r}
+VAF = round(Lambda / matrixTrace(S), digits=4);
+VAF;
+
+
+```
+
+```{r}
+summary(Xs.PCA);
+```
+
+```{r}
+VAF.cumsum = cumsum(VAF);
+VAF.cumsum;
+```
+
+
+### Looking at all of the "Principal Component Dimensions"
+
+We can simultaneously plot rows and columns on the same graph (rows = wells, columns = metals)
+```{r}
+biplot(Xs.PCA);
+```
+Technically, this is SVD that allows this to work, which we will demonstrate shortly.  For now, let's look at all of the dimensions.
+
+```{r}
+biplot(Xs.PCA, 1:2, xlab=paste0("PC1: (", 100 * VAF[1], "%)"), ylab=paste0("PC2: (", 100 * VAF[2], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 3:2, xlab=paste0("PC3: (", 100 * VAF[3], "%)"), ylab=paste0("PC2: (", 100 * VAF[2], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 3:4, xlab=paste0("PC3: (", 100 * VAF[3], "%)"), ylab=paste0("PC4: (", 100 * VAF[4], "%)"));
+```
+```{r}
+biplot(Xs.PCA, 5:4, xlab=paste0("PC5: (", 100 * VAF[5], "%)"), ylab=paste0("PC4: (", 100 * VAF[4], "%)"));
+```
+```{r}
+biplot(Xs.PCA, 5:6, xlab=paste0("PC5: (", 100 * VAF[5], "%)"), ylab=paste0("PC6: (", 100 * VAF[6], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 7:6, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC6: (", 100 * VAF[6], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 7:8, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC8: (", 100 * VAF[8], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 9:8, xlab=paste0("PC9: (", 100 * VAF[9], "%)"), ylab=paste0("PC8: (", 100 * VAF[8], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 9:10, xlab=paste0("PC9: (", 100 * VAF[9], "%)"), ylab=paste0("PC10: (", 100 * VAF[10], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 11:10, xlab=paste0("PC11: (", 100 * VAF[11], "%)"), ylab=paste0("PC10: (", 100 * VAF[10], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 11:12, xlab=paste0("PC11: (", 100 * VAF[11], "%)"), ylab=paste0("PC12: (", 100 * VAF[12], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 13:12, xlab=paste0("PC13: (", 100 * VAF[13], "%)"), ylab=paste0("PC12: (", 100 * VAF[12], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 13:14, xlab=paste0("PC13: (", 100 * VAF[13], "%)"), ylab=paste0("PC14: (", 100 * VAF[14], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 15:14, xlab=paste0("PC15: (", 100 * VAF[15], "%)"), ylab=paste0("PC14: (", 100 * VAF[14], "%)"));
+```
+
+
+# Singular Value Decomposition
+
+Mathematically, SVD is a more general form of PCA.
+
+<https://math.stackexchange.com/questions/3869/>
+
+## Mathematics of PCA
+
+$$ S = \frac{1}{n-1} X \cdot X^T $$
+If X is scaled `Xs`, this is the same as the correlation matrix $R$.
+
+I used the notation $S$ for sample covariance scaled by $\frac{1}{n-1}$.  
+
+The common general notation, is $\Sigma$:
+
+$$ \Sigma = X \cdot X^\top $$
+We will update `S.eigen = eigen(S);` as `Sigma.eigen = eigen(Sigma);`
+
+The eigenvectors are `W = Sigma.eigen$vectors;`
+The eigenvalues $\lambda_$s are `Lambda = S.eigen$values;`
+
+`D = diag(Lambda);`
+
+`D.sqrt = diag(sqrt(Lambda));`
+
+`T = Xs %*% W;`  This is the full principle components decomposition.
+
+`F = as.matrix(W) %*% D.sqrt;`
+
+`Z = ( W %*% D %*% transposeMatrix(W) );` This was demonstrated to be equivalent to $S$
+
+$$Z = W \cdot D \cdot W^\top$$
+In total, this is:
+
+$$ \frac{1}{n-1}\mathbf X\mathbf X^\top=\frac{1}{n-1}\mathbf W\mathbf D\mathbf W^\top $$
+
+The scaling factor $\frac{1}{n-1}$ is based on the number of observations, but the primary relationship is important:
+
+$$ \mathbf X\mathbf X^\top = \mathbf W\mathbf D\mathbf W^\top $$
+
+## SVD
+
+By definition, singular value decomposition
+
+$$ \mathbf X=\mathbf U\mathbf \Sigma\mathbf V^\top $$
+$$ \frac{1}{n-1}\mathbf X\mathbf X^\top
+=\frac{1}{n-1}(\mathbf U\mathbf \Sigma\mathbf V^\top)(\mathbf U\mathbf \Sigma\mathbf V^\top)^\top
+= \frac{1}{n-1}(\mathbf U\mathbf \Sigma\mathbf V^\top)(\mathbf V\mathbf \Sigma\mathbf U^\top) $$
+
+$$ \mathbf V^\top \mathbf V=\mathbf I $$
+
+$$ \frac{1}{n-1}\mathbf X\mathbf X^\top=\frac{1}{n-1}\mathbf U\mathbf \Sigma^2 \mathbf U^\top $$
+
+
+
+
+
+## Matching PCA to SVD
+
+$$ \mathbf W \mathbf D \mathbf W^\top = \mathbf U \mathbf \Sigma^2 \mathbf U^\top $$
+The left-hand side (LHS) was the PCA structure; the right-hand side (RHS) was the SVD structure.  With different notation, they are equivalent.
+
+
+$$ \mathbf W_{\text{PCA}} = \mathbf U_{\text{SVD}}$$
+
+$$ \mathbf D_{\text{PCA}} = \mathbf \Sigma^2_{\text{SVD}}$$
+
+## Empirical Comparison
+
+```{r}
+n = 23; # wells
+m = 15; # metals
+Xs.SVD = svd(Xs, nu = n, nv = m);
+str(Xs.SVD);
+```
+
+We could "truncate" the results and choose only top options, but for now, let's show the "full and true" SVD (singular value decomposition).
+
+The "u" matrix is 23 x 23 (mapping to the wells).
+
+
+
+```{r}
+U = Xs.SVD$u;
+dim(U);
+```
+
+The "v" matrix is 15 x 15 (mapping to the metals).
+
+```{r}
+V = Xs.SVD$v;
+dim(V);
+```
+
+
+```{r}
+Xs.SVD$d;
+```
+
+```{r}
+cor( Xs.SVD$d, D.sqrt );
+```
+
+```{r}
+plot( Xs.SVD$d, D.sqrt );
+```
+
+The scaling factor in this case:
+
+```{r}
+D.sqrt / Xs.SVD$d;
+```
+
+
+```{r}
+zeroIsh( cor(T, U) );
+```
+Notice because of the ordering a correlation is perfect in either the positive or negative direction.  Recall how $T$ was constructed above.
+
+-- THOUGHTS --
+
+The dimensions of $V$ is 15 x 15.  How would you identify its correlation with the PCA data?  Is it possible?
+
+
